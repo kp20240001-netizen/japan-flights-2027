@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
     <link rel="icon" href="data:," />
     <title>桃園購屋每日名單</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -14,6 +14,7 @@
          生成り白底 + 墨 + 單一強調色（深藍）。格線即裝飾、襯線數字、
          直書點綴。色彩紀律：底 + 墨 + 強調 ≤3 色（功能警示色除外）。 */
       :root {
+        color-scheme: light;
         --bg: #FAFAF8;
         --surface: #FFFFFF;
         --surface-2: #F1EFE9;
@@ -32,24 +33,6 @@
         --radius-sm: 3px;
         --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
         --font-serif: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
-      }
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --bg: #131518;
-          --surface: #1B1E23;
-          --surface-2: #23262C;
-          --ink: #ECEEF0;
-          --ink-2: #C6CAD0;
-          --ink-3: #9BA1A9;
-          --line: #2E3238;
-          --line-strong: #454B53;
-          --accent: #8FB0D8;
-          --accent-ink: #A9C4E6;
-          --accent-soft: #22314A;
-          --warn: #E8A58F;
-          --warn-line: #6E3A30;
-          --high: #F0937F;
-        }
       }
 
       * { box-sizing: border-box; }
@@ -212,7 +195,6 @@
       .badge.flat { color: var(--ink-2); }
       .badge.cond { color: var(--warn); border: 1px dashed var(--warn); font-weight: 700; }
       .badge.star-badge { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
-      @media (prefers-color-scheme: dark) { .badge.star-badge { color: #10151d; } }
       .specs {
         display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 16px;
         margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line);
@@ -237,7 +219,6 @@
         .card-actions .btn { flex: 1 1 0; min-height: 48px; }
       }
       .btn-primary { background: var(--accent); color: #fff; border: 1px solid var(--accent); }
-      @media (prefers-color-scheme: dark) { .btn-primary { color: #10151d; } }
       .btn-ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line-strong); }
       .btn .chev { transition: transform .18s ease; font-size: 12px; }
       .btn[aria-expanded="true"] .chev { transform: rotate(180deg); }
