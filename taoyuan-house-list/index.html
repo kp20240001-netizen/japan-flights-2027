@@ -477,7 +477,7 @@
         html += '<p style="margin:10px 0 0;font-size:14px;color:var(--ink-2)"><strong style="color:var(--ink)">車位：</strong>' + esc(p.parking) + '</p>';
         if (isStar) html += '<div class="star-reason"><span class="lbl">★ 特別推薦理由</span>' + esc(starReason) + '</div>';
         html += '<div class="card-actions">'
-          + '<a class="btn btn-primary" href="' + esc(p.url) + '">開啟物件頁 ↗</a>'
+          + '<a class="btn btn-primary" href="' + esc(p.url) + '" target="_blank" rel="noopener">開啟物件頁 ↗</a>'
           + '<button class="btn btn-ghost" type="button" aria-expanded="false" data-toggle="' + p.id + '">完整內容 <span class="chev" aria-hidden="true">▾</span></button>'
           + '</div>';
         html += '</div>';
@@ -709,10 +709,14 @@
 
       /* NOTE: No global touch/swipe day-switching. A document-level touchend
          handler that re-renders the list can destroy the tapped element
-         before its click fires, and target="_blank" new-window requests are
-         silently dropped by some mobile webviews — both made the listing
-         links feel dead on phones. Day switching stays on the ‹ › buttons,
-         the date pills/select, and ← → keys. */
+         before its click fires, which made the listing links feel dead on
+         phones. Day switching stays on the ‹ › buttons, the date
+         pills/select, and ← → keys.
+         Property links intentionally use target="_blank" (user request,
+         2026-11-07): this GitHub Pages version is opened in a normal mobile
+         browser, where a new tab keeps the list page in place. Do not
+         "fix" this back to same-tab — the same-tab change was only a
+         workaround for the Muse share webview, not for this page. */
 
       var suppressHash = false;
       window.addEventListener("hashchange", function(){
