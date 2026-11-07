@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>桃園購屋每日名單</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+    <style>
+      /* ---------- Design tokens ---------- */
+      :root {
+        --bg: #f7f5f1;
+        --surface: #ffffff;
+        --surface-2: #efede7;
+        --ink: #1d2420;
+        --ink-2: #4c554f;
+        --ink-3: #6b756e;
+        --line: #ddd8cd;
+        --accent: #14604c;
+        --accent-ink: #0d4a3a;
+        --accent-soft: #e2efe9;
+        --star: #8a5a00;
+        --star-soft: #fdf3dd;
+        --warn: #8a3b12;
+        --warn-soft: #fbeedd;
+        --good: #14604c;
+        --good-soft: #e2efe9;
+        --mid: #7a5b00;
+        --mid-soft: #f7efda;
+        --high: #9c2b1b;
+        --high-soft: #fbe9e4;
+        --radius: 14px;
+        --radius-sm: 9px;
+        --shadow: 0 1px 2px rgba(29, 36, 32, .06), 0 4px 14px rgba(29, 36, 32, .05);
+        --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #141714;
+          --surface: #1e221e;
+          --surface-2: #272b27;
+          --ink: #eef1ec;
+          --ink-2: #c3cbc2;
+          --ink-3: #9aa79b;
+          --line: #39403a;
+          --accent: #5cc79e;
+          --accent-ink: #8fe0bf;
+          --accent-soft: #1d332a;
+          --star: #f0c169;
+          --star-soft: #3a2f14;
+          --warn: #f2b183;
+          --warn-soft: #3d2716;
+          --good: #5cc79e;
+          --good-soft: #1d332a;
+          --mid: #e8cd7d;
+          --mid-soft: #38300f;
+          --high: #f0937f;
+          --high-soft: #3d1f18;
+          --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+        }
+      }
+
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font);
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+      button { font-family: inherit; cursor: pointer; }
+      a { color: var(--accent-ink); }
+
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 16px 48px; }
+
+      /* ---------- Sticky date bar ---------- */
+      .datebar {
+        position: sticky; top: 0; z-index: 20;
+        background: var(--bg);
+        border-bottom: 1px solid var(--line);
+        padding: 10px 0 8px;
+        margin: 0 -16px; padding-left: 16px; padding-right: 16px;
+      }
+      .datebar-row { display: flex; align-items: center; gap: 8px; }
+      .datebar-row .date-pills { flex: 1 1 auto; }
+      .nav-arrow {
+        flex: 0 0 auto; width: 44px; height: 44px;
+        border: 1px solid var(--line); border-radius: 999px;
+        background: var(--surface); color: var(--ink);
+        font-size: 20px; line-height: 1; display: grid; place-items: center;
+      }
+      .nav-arrow:disabled { opacity: .35; cursor: default; }
+      .date-pills {
+        display: flex; gap: 8px; overflow-x: auto; flex: 1 1 auto;
+        scrollbar-width: none; padding: 2px;
+      }
+      .date-pills::-webkit-scrollbar { display: none; }
+      .date-pill {
+        flex: 0 0 auto; min-height: 44px; padding: 8px 14px;
+        border: 1px solid var(--line); border-radius: 999px;
+        background: var(--surface); color: var(--ink);
+        font-size: 14px; font-weight: 500; white-space: nowrap;
+      }
+      .date-pill[aria-current="date"] {
+        background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700;
+      }
+      @media (prefers-color-scheme: dark) {
+        .date-pill[aria-current="date"] { color: #0c1a14; }
+      }
+      .datebar-sub { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+      @media (max-width: 560px) {
+        .date-pill { padding: 8px 11px; font-size: 13.5px; }
+        .datebar-sub .nav-arrow { width: 44px; height: 44px; }
+      }
+      .month-select, .sort-select {
+        min-height: 44px; padding: 8px 10px; font-size: 14px;
+        border: 1px solid var(--line); border-radius: var(--radius-sm);
+        background: var(--surface); color: var(--ink); font-family: inherit;
+      }
+      .today-btn {
+        min-height: 44px; padding: 8px 14px;
+        border: 1px solid var(--accent); border-radius: 999px;
+        background: var(--accent-soft); color: var(--accent-ink);
+        font-size: 14px; font-weight: 700;
+      }
+      .today-btn:disabled { opacity: .4; border-color: var(--line); background: var(--surface-2); color: var(--ink-3); }
+
+      /* ---------- Day heading ---------- */
+      .day-head { padding: 22px 0 4px; }
+      .day-head h1 { font-size: 26px; font-weight: 900; margin: 0 0 4px; letter-spacing: .01em; }
+      .day-head .sub { color: var(--ink-2); font-size: 15px; margin: 0; }
+      .cond-line {
+        margin-top: 10px; font-size: 13.5px; color: var(--ink-2);
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--radius-sm); padding: 8px 12px;
+      }
+
+      /* ---------- Changes alert ---------- */
+      .changes {
+        margin-top: 16px; border: 1px solid var(--warn); border-radius: var(--radius);
+        background: var(--warn-soft); padding: 14px 16px;
+      }
+      .changes h2 { margin: 0 0 6px; font-size: 16px; color: var(--warn); display: flex; align-items: center; gap: 8px; }
+      .changes ul { margin: 0; padding-left: 20px; }
+      .changes li { margin: 2px 0; }
+
+      /* ---------- Day note ---------- */
+      .day-note {
+        margin-top: 16px; font-size: 14.5px; color: var(--ink-2);
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--radius); padding: 12px 16px;
+      }
+      .day-note strong { color: var(--ink); }
+
+      /* ---------- Sections ---------- */
+      .section-title { font-size: 19px; font-weight: 900; margin: 28px 0 12px; display: flex; align-items: baseline; gap: 8px; }
+      .section-title .hint { font-size: 13px; font-weight: 400; color: var(--ink-3); }
+
+      /* ---------- Cards ---------- */
+      .card {
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--radius); box-shadow: var(--shadow);
+        margin-bottom: 12px; overflow: hidden;
+      }
+      .card.star-card { border: 2px solid var(--star); }
+      .card-main { padding: 16px; }
+      .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+      .card-name { font-size: 18px; font-weight: 700; margin: 0; line-height: 1.35; }
+      .card-name .area-tag {
+        display: inline-block; vertical-align: 2px; margin-left: 8px;
+        font-size: 12px; font-weight: 700; color: var(--accent-ink);
+        background: var(--accent-soft); border-radius: 999px; padding: 2px 9px;
+      }
+      .price { text-align: right; flex: 0 0 auto; }
+      .price .amount { font-size: 24px; font-weight: 900; line-height: 1.15; }
+      .price .unit { font-size: 13px; color: var(--ink-2); }
+      .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+      .badge {
+        font-size: 12.5px; font-weight: 700; border-radius: 999px; padding: 3px 10px;
+        display: inline-flex; align-items: center; gap: 5px;
+      }
+      .badge .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: 0 0 auto; }
+      .badge.good { background: var(--good-soft); color: var(--good); }
+      .badge.mid  { background: var(--mid-soft);  color: var(--mid); }
+      .badge.high { background: var(--high-soft); color: var(--high); }
+      .badge.flat { background: var(--surface-2); color: var(--ink-2); }
+      .badge.cond { background: var(--warn-soft); color: var(--warn); border: 1px dashed var(--warn); }
+      .badge.star-badge { background: var(--star-soft); color: var(--star); }
+      .specs {
+        display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 16px;
+        margin-top: 12px; font-size: 14.5px;
+      }
+      @media (min-width: 560px) { .specs { grid-template-columns: repeat(4, 1fr); } }
+      .specs .k { color: var(--ink-3); font-size: 12.5px; display: block; }
+      .specs .v { font-weight: 700; }
+      .star-reason {
+        margin-top: 12px; background: var(--star-soft); border-radius: var(--radius-sm);
+        padding: 12px 14px; font-size: 15px;
+      }
+      .star-reason .lbl { font-weight: 900; color: var(--star); display: block; margin-bottom: 2px; font-size: 13.5px; }
+      .card-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+      .btn {
+        min-height: 44px; padding: 10px 16px; border-radius: var(--radius-sm);
+        font-size: 14.5px; font-weight: 700; text-decoration: none;
+        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+      }
+      @media (max-width: 560px) {
+        .card-actions .btn { flex: 1 1 0; min-height: 48px; }
+      }
+      .btn-primary { background: var(--accent); color: #fff; border: 1px solid var(--accent); }
+      @media (prefers-color-scheme: dark) { .btn-primary { color: #0c1a14; } }
+      .btn-ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+      .btn .chev { transition: transform .18s ease; font-size: 12px; }
+      .btn[aria-expanded="true"] .chev { transform: rotate(180deg); }
+      .card-detail { border-top: 1px solid var(--line); padding: 14px 16px 16px; background: var(--surface); }
+      .card-detail[hidden] { display: none; }
+      .detail-grid { display: grid; gap: 10px; }
+      @media (min-width: 640px) { .detail-grid { grid-template-columns: 1fr 1fr; } }
+      .detail-item .k { font-size: 12.5px; font-weight: 700; color: var(--ink-3); display: block; margin-bottom: 1px; }
+      .detail-item .v { font-size: 14.5px; }
+      .detail-item.wide { grid-column: 1 / -1; }
+      .anchor-box {
+        background: var(--accent-soft); border-radius: var(--radius-sm);
+        padding: 10px 14px; font-size: 15px;
+      }
+      .anchor-box .k { color: var(--accent-ink); }
+      .anchor-box .v { font-weight: 900; font-size: 17px; }
+
+      /* ---------- Filters ---------- */
+      .filters { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+      .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+      .chip {
+        min-height: 44px; padding: 8px 16px; border-radius: 999px;
+        border: 1px solid var(--line); background: var(--surface);
+        color: var(--ink); font-size: 14.5px; font-weight: 500;
+      }
+      .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 700; }
+      .filters .row { display: flex; align-items: center; gap: 10px; }
+      .filters label { font-size: 14px; color: var(--ink-2); font-weight: 700; }
+
+      /* ---------- States ---------- */
+      .state-box {
+        border: 1px dashed var(--line); border-radius: var(--radius);
+        padding: 32px 20px; text-align: center; color: var(--ink-2);
+        background: var(--surface); margin-top: 12px;
+      }
+      .state-box .big { font-size: 17px; font-weight: 700; color: var(--ink); margin: 0 0 4px; }
+      .state-box p { margin: 0; font-size: 14.5px; }
+      .skeleton { margin-top: 12px; display: grid; gap: 12px; }
+      .skel {
+        height: 148px; border-radius: var(--radius); border: 1px solid var(--line);
+        background: linear-gradient(100deg, var(--surface-2) 40%, var(--surface) 50%, var(--surface-2) 60%);
+        background-size: 200% 100%; animation: shimmer 1.2s infinite;
+      }
+      @keyframes shimmer { from { background-position: 120% 0; } to { background-position: -80% 0; } }
+      @media (prefers-reduced-motion: reduce) { .skel { animation: none; } .btn .chev { transition: none; } }
+      .error-box { border-color: var(--high); background: var(--high-soft); color: var(--ink); }
+
+      /* ---------- History overview ---------- */
+      .history { margin-top: 8px; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
+      .history-row {
+        display: grid; grid-template-columns: 1fr auto; gap: 4px 12px;
+        width: 100%; text-align: left; padding: 14px 16px; min-height: 44px;
+        background: var(--surface); border: 0; border-bottom: 1px solid var(--line);
+        color: var(--ink); font-size: 15px; align-items: center;
+      }
+      .history-row:last-child { border-bottom: 0; }
+      .history-row:hover { background: var(--surface-2); }
+      .history-row .d { font-weight: 700; }
+      .history-row .meta { color: var(--ink-2); font-size: 13.5px; grid-column: 1 / -1; }
+      .history-row .go { color: var(--accent-ink); font-weight: 700; font-size: 14px; }
+      .history-row[aria-current="date"] { background: var(--accent-soft); }
+
+      footer {
+        margin-top: 36px; border-top: 1px solid var(--line); padding-top: 16px;
+        color: var(--ink-2); font-size: 13.5px;
+      }
+      footer p { margin: 4px 0; }
+      .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <!-- Sticky date switcher -->
+      <nav class="datebar" aria-label="日期切換">
+        <div class="datebar-row">
+          <div class="date-pills" id="datePills" role="group" aria-label="最近日期"></div>
+        </div>
+        <div class="datebar-sub">
+          <button class="nav-arrow" id="prevDay" type="button" aria-label="前一天">‹</button>
+          <button class="nav-arrow" id="nextDay" type="button" aria-label="後一天">›</button>
+          <label class="sr-only" for="monthSelect">依日期跳轉（全部有資料的日期）</label>
+          <select class="month-select" id="monthSelect" aria-label="跳轉到指定日期"></select>
+          <button class="today-btn" id="todayBtn" type="button">回到今天</button>
+          <span style="font-size:13px;color:var(--ink-3)">按 ‹ › 或 ← → 也能換日</span>
+        </div>
+      </nav>
+
+      <main id="main">
+        <div id="status" aria-live="polite"></div>
+        <div id="dayView"></div>
+
+        <section aria-labelledby="historyTitle">
+          <h2 class="section-title" id="historyTitle">歷史總覽 <span class="hint">點任一列直接跳到那一天</span></h2>
+          <div class="history" id="historyList"></div>
+        </section>
+      </main>
+
+      <footer>
+        <p>開價與刊登狀態以查詢日為準，物件可能隨時售出或下架，看房前請先向仲介確認還在售、車位型態與裝潢現況。</p>
+        <p>「增值空間」為依重劃區成熟度、交通建設進度、人口移入與單價基期所做的分析推估，非保證；標示「未定案」的建設尚未定案，保守看待。</p>
+        <p>篩選條件：總價 2,000 萬內含 1 車位、2+1 或 3 房、屋齡 20 年內、可直接入住；範圍為中路、小檜溪、大有、三峽北大、鶯歌鳳鳴 5 區。本頁收錄的是各日公布名單（11/6、11/7 含跨日續列物件）；自 11/8 起，每日名單改為只列當日新發現的合格物件、不重複續推，不足 10 間不湊數。</p>
+      </footer>
+    </div>
+
+    <script>
+      /* ================= Data (baked snapshot) ================= */
+      var PROPERTIES = {
+        jingcheng: { id:"jingcheng", name:"景程禾雅", area:"鶯歌鳳鳴", url:"https://buy.yungching.com.tw/house/7402344",
+          price:1788, age:6.3, totalPing:45.31, mainPing:23.45, layout:"3房2廳2衛", parking:"坡道平面固定車位",
+          actual:"同社區近一年成交均價約 38.8 萬/坪，開價約 39.5 萬/坪，僅高約 2%", premium:2, anchor:"1,700–1,740 萬",
+          pros:"溫馨裝潢、屋況維護好可直接入住，溢價僅約 2%、貼近實登", cons:"鳳鳴機能仍在發展、離桃園市區較遠",
+          growth:"中", growthWhy:"鳳鳴單價還在低基期，鳳鳴火車站已啟用、三鶯線施工中（通車時程未定案），區域成熟後有補漲空間；但新案供給多，補漲速度看入住率",
+          park:"近鳳鳴公園", commute:"車程約 5–10 分鐘上國道二號大湳交流道", note:"" },
+        liyue: { id:"liyue", name:"麗悅", area:"大有", url:"https://buy.yungching.com.tw/house/7533205",
+          price:1698, age:12.4, totalPing:47.10, mainPing:24.11, layout:"3房2廳2衛", parking:"坡道平面固定車位",
+          actual:"同社區同坪型 114 年 3 月成交 1,650 萬，開價僅高約 3%", premium:3, anchor:"1,620–1,660 萬",
+          pros:"室內空間最大（主+陽 24.11 坪），價格最貼近實登", cons:"屋齡 12.4 年是名單中較舊者",
+          growth:"中", growthWhy:"大有是成熟生活圈、新供給少、單價相對桃園熱區偏低，有市區外溢的補漲與保值條件；但沒有大型建設題材，漲幅溫和",
+          park:"近大有梯田生態公園", commute:"車程約 10 分鐘上國道一號南崁交流道", note:"" },
+        xiamuni: { id:"xiamuni", name:"麗寶南法莊園-霞慕尼 2F", area:"小檜溪", url:"https://sale.591.com.tw/home/house/detail/2/20878914.html",
+          price:1668, age:1, totalPing:38.71, mainPing:18.5, layout:"2+1房2廳2衛", parking:"平面式車位（已含售金內）",
+          actual:"開價單價約 43.1 萬/坪，低於社區近一年均價約 52.4 萬/坪約 18%", premium:-18, anchor:"1,600–1,680 萬",
+          pros:"小檜溪難得出現的合格物件，1 年新屋、簡易裝潢可直接入住，雙衛浴", cons:"主建物偏小；刊登有效期只到 2026-11-08，要看要快",
+          growth:"中", growthWhy:"市中心新重劃區、定位高，鄰近桃園車站商圈，捷運綠線施工中（通車時程未定案）；本戶開價低於社區均價約 18%，入手基期相對低",
+          park:"近小檜溪水岸步道", commute:"上交流道較遠", note:"" },
+        xiangyang: { id:"xiangyang", name:"向陽綻", area:"中路", url:"https://sale.591.com.tw/home/house/detail/2/20945240.html",
+          price:1758, age:1, totalPing:47.47, mainPing:20, layout:"3房2廳2衛", parking:"平面式車位",
+          actual:"同社區最近一筆成交總價 1,766 萬，開價總價略低", premium:null, premiumLabel:"開價略低於最近一筆成交", anchor:"1,680–1,700 萬",
+          pros:"向陽公園旁步行 2 分鐘，遛狗與上南桃園交流道條件最強，全新交屋", cons:"需向仲介確認已交屋成屋身分；全新未裝潢，冷氣窗簾需小額添置",
+          growth:"中", growthWhy:"中路是桃園發展最快的重劃區之一，鄰市政府與司法園區、人口移入強；但新案供給量大、單價已在高檔，增值看供給消化速度",
+          park:"向陽公園旁，步行約 2 分鐘", commute:"近南桃園交流道", note:"" },
+        wish: { id:"wish", name:"WISH歐洲 13F", area:"三峽北大", url:"https://sale.591.com.tw/home/house/detail/2/21085325.html",
+          price:1888, age:20, totalPing:45.69, mainPing:null, layout:"3房2廳2衛", parking:"平面式車位",
+          actual:"開價扣車位單價約 49.8 萬/坪，比北大近一年均價高約 7–11%", premium:9, anchor:"1,800–1,850 萬",
+          pros:"簡易裝潢、近公園綠地，北大生活機能最成熟", cons:"屋齡 20 年正好在上限邊緣，管線與公設維護要現場多看",
+          growth:"小", growthWhy:"北大機能成熟、三鶯線是主要題材（通車時程未定案），但屋齡已 20 年，增值主要靠地段，建物折舊會吃掉一部分",
+          park:"近公園綠地", commute:"", note:"" },
+        dulele: { id:"dulele", name:"合新讀樂樂", area:"中路", url:"https://buy.houseprice.tw/house/39064479_2780404/",
+          price:1888, age:7.5, totalPing:50.63, mainPing:25.52, layout:"3房2廳2衛", parking:"坡道平面車位",
+          actual:"同社區近一年均價 41.1 萬/坪，開價扣車位單價約 45.2 萬/坪，高約 10%", premium:10, anchor:"1,730–1,800 萬",
+          pros:"已降價 80 萬、6 天前新上架，前後陽台、衛浴開窗", cons:"3 樓低樓層，採光視野受限；裝潢程度未明載，要看房確認能否直接入住",
+          growth:"中", growthWhy:"中路區域動能強、人口移入多，但供給大、基期已高；本戶剛降價 80 萬，入手價有往實登靠攏的空間",
+          park:"近水秀、風禾公園一帶", commute:"", note:"已降價 80 萬" },
+        dunpin: { id:"dunpin", name:"大睦敦品 11F", area:"大有", url:"https://buy.houseprice.tw/house/39077129_921338/",
+          price:1850, age:4.8, totalPing:51.18, mainPing:27.01, layout:"3房2廳2衛", parking:"坡道平面車位",
+          actual:"同社區同戶型 112 年 7 月成交 1,687 萬，開價高約 9.7%", premium:9.7, anchor:"1,700–1,750 萬",
+          pros:"大有少見的 5 年內輕屋齡三房平車，主+陽 27 坪實在，24 小時管理", cons:"公設比 35% 偏高；開價比同戶型實價高約一成",
+          growth:"中", growthWhy:"4.8 年輕屋齡在大有新案稀少、相對稀缺，保值性好；區段缺大型建設題材，增值靠市區外溢，溫和向上",
+          park:"近大有梯田生態公園、桃林步道", commute:"", note:"" },
+        shangbeida: { id:"shangbeida", name:"上北大 3F", area:"三峽北大", url:"https://sale.591.com.tw/home/house/detail/2/21103256.html",
+          price:1980, age:19, totalPing:44.75, mainPing:null, layout:"3房2廳2衛", parking:"平面式車位",
+          actual:"同社區 115 年 5 月成交 1,760 萬含車位（45.12 坪），開價高約 12%", premium:12, anchor:"1,780–1,850 萬",
+          pros:"格局方正、素雅裝潢可直接入住，面向中庭不吵雜，近公園與學校", cons:"屋齡 19 年偏高，總價逼近上限，議價空間有限",
+          growth:"小", growthWhy:"19 年屋齡、總價已逼近 2000 萬上限，入手基期不低；三鶯線題材未定案，增值空間相對有限",
+          park:"近公園與國小國中", commute:"經學成路約 5–10 分鐘上三鶯交流道", note:"" },
+        chengshi: { id:"chengshi", name:"丞石菁英薈 5F", area:"鶯歌鳳鳴", url:"https://buy.houseprice.tw/house/39083575_1746052/",
+          price:1980, age:9, totalPing:55.12, mainPing:28.99, layout:"3房2廳2衛", parking:"坡道平面車位",
+          actual:"同社區同型 114 年 6 月成交 1,600 萬，開價高約 24%", premium:24, anchor:"1,650–1,750 萬",
+          pros:"前後陽台、通風採光好，社區管理完善，坪數最大", cons:"溢價偏高，總價逼近上限，出價要守住錨點",
+          growth:"小", growthWhy:"鳳鳴的低基期和建設題材都在，但開價高於同型成交約 24%，增值要先等行情追上開價；議價到錨點後空間會明顯好轉",
+          park:"近鳳鳴公園、鳳福公園", commute:"車程約 5–10 分鐘上大湳交流道", note:"" },
+        hefa: { id:"hefa", name:"和發天鑽", area:"大有", url:"https://buy.yungching.com.tw/house/7553853",
+          price:1598, age:7.6, totalPing:42.29, mainPing:20.94, layout:"3房2廳1衛", parking:"坡道平面固定車位",
+          actual:"同社區近一年無成交揭露，以大有商圈行情推估，開價偏高", premium:null, premiumLabel:"無同社區實登揭露", anchor:"1,450–1,500 萬",
+          pros:"7.6 年輕屋齡＋平面固定車位＋格局方正，總價最低", cons:"僅 1 衛浴，主+陽 20.94 坪偏小",
+          growth:"小", growthWhy:"總價最低、入手門檻低是優點，但開價相對商圈行情偏高、1 衛格局轉手性較弱；增值主要看能不能談到錨點",
+          park:"近桃林步道、梯田公園", commute:"", note:"" },
+        fengyao: { id:"fengyao", name:"上北大鳳耀", area:"三峽北大", url:"https://www.sinyi.com.tw/buy/house/1055JR",
+          price:1598, age:19.8, totalPing:36.5, mainPing:26.34, layout:"3房2廳2衛", parking:"無車位（須另購，同社區約 130–180 萬）",
+          actual:"同社區 115 年 5 月成交 1,760 萬含車位", premium:null, premiumLabel:"本體開價（不含車位）", anchor:"須先確認車位買得到，含車位總價才成立",
+          pros:"有裝潢、近公園，本體開價低於同社區含車位成交", cons:"本身不含車位，是條件式物件",
+          growth:"小", growthWhy:"屋齡近 20 年、無車位需另購；增值靠北大地段與三鶯線題材（未定案）",
+          park:"近公園", commute:"", note:"", conditional:true, conditionalWhy:"本身不含車位，須先確認同社區車位買得到（約 130–180 萬），含車位總價才成立" },
+        weile: { id:"weile", name:"唯樂之丘", area:"中路", url:"https://buy.yungching.com.tw/house/7567108",
+          price:1688, age:7, totalPing:39.15, mainPing:21.26, layout:"3房2廳1衛", parking:"含車位",
+          actual:"同坪型近一年成交 1,537–1,580 萬，開價仍高約 8%", premium:8, anchor:"1,560–1,600 萬",
+          pros:"剛由 1,788 萬降至 1,688 萬", cons:"僅 1 衛；11/7 查核原連結失效、無法確認在售，看房前先向仲介確認",
+          growth:"中", growthWhy:"中路動能強，但開價高於實登約 8%，議價回錨點後增值空間才轉好；目前在售狀態待確認",
+          park:"水秀公園約 270 公尺", commute:"", note:"11/6 備選；11/7 起移出名單" }
+      };
+
+      var DAYS = [
+        { date:"2026-11-06", ids:["liyue","jingcheng","xiangyang","fengyao","hefa","weile"], changes:[],
+          note:"小檜溪本日無合格物件：三本四季 3 房實登成交 2,108–2,123 萬超預算；預算內的 1,688 萬是 2 房、主建物僅 15.05 坪，太小不推。本日沒有一間開價明確低於同社區實登，以溢價率排序。",
+          stars:[] },
+        { date:"2026-11-07", ids:["jingcheng","liyue","xiamuni","xiangyang","wish","dulele","dunpin","shangbeida","chengshi","hefa"],
+          changes:["唯樂之丘（11/6 名單）原連結失效、無法確認在售，已移出名單","合新讀樂樂已降價 80 萬","小檜溪霞慕尼刊登有效期只到 11/08，要看要快"],
+          note:"今日未列入：達人生活 1,588 萬（帶租約不能直接入住）、YES歐洲 1,988 萬（屋齡 21 年超標）、四季會館 5F（僅 1 衛、刊登至 11/08）；璟都城品與紐約大時代未完成逐頁核對，不列入。",
+          stars:[
+            { id:"jingcheng", reason:"溢價僅高實登約 2%、是當日高於實登的物件中最低，屋況維護好、可直接入住，主+陽 23.45 坪實在，坡道平面固定車位，近鳳鳴公園遛狗方便 — 價格、屋況、地點三項同時到位，是今天最值得優先約看的一間。出價錨點 1,700–1,740 萬。" },
+            { id:"xiamuni", reason:"小檜溪在預算內幾乎沒有合格物件，這間是少數例外：開價單價比社區近一年均價低約 18%，是今天唯一開價明顯低於行情的物件；1 年新屋可直接入住、雙衛浴、平面車位。唯一要注意刊登只到 11/08，想看要馬上確認續刊並約時間。" }
+          ] }
+      ];
+
+      var AREAS = ["全部","中路","小檜溪","大有","三峽北大","鶯歌鳳鳴"];
+      var WEEKDAYS = ["日","一","二","三","四","五","六"];
+
+      /* ================= State ================= */
+      var state = { date:null, area:"全部", sort:"premium" };
+      var latestDate = DAYS[DAYS.length - 1].date;
+
+      function parseDate(s){ var p = s.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
+      function fmtShort(s){ var d = parseDate(s); return (d.getMonth()+1) + "/" + d.getDate(); }
+      function fmtFull(s){ var d = parseDate(s); return d.getFullYear() + "年" + (d.getMonth()+1) + "月" + d.getDate() + "日"; }
+      function weekday(s){ return WEEKDAYS[parseDate(s).getDay()]; }
+      function relLabel(s){
+        if (s === latestDate) return "今天";
+        var diff = Math.round((parseDate(latestDate) - parseDate(s)) / 86400000);
+        if (diff === 1) return "昨天";
+        return "";
+      }
+      function dayByDate(s){ for (var i=0;i<DAYS.length;i++) if (DAYS[i].date===s) return DAYS[i]; return null; }
+      function esc(t){ return String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+      function premiumBadge(p){
+        if (p.premium === null || p.premium === undefined) {
+          return '<span class="badge flat">' + esc(p.premiumLabel || "無溢價資料") + '</span>';
+        }
+        var v = Math.abs(p.premium);
+        var vTxt = (v % 1 === 0) ? String(v) : v.toFixed(1);
+        if (p.premium < 0) return '<span class="badge good"><span class="dot"></span>低於實登 ' + vTxt + '%</span>';
+        if (p.premium <= 5) return '<span class="badge good"><span class="dot"></span>高於實登 ' + vTxt + '%</span>';
+        if (p.premium <= 12) return '<span class="badge mid"><span class="dot"></span>高於實登 ' + vTxt + '%</span>';
+        return '<span class="badge high"><span class="dot"></span>高於實登 ' + vTxt + '%</span>';
+      }
+      function growthBadge(p){
+        var cls = p.growth === "大" ? "good" : (p.growth === "中" ? "mid" : "flat");
+        return '<span class="badge ' + cls + '"><span class="dot"></span>增值空間：' + esc(p.growth) + '</span>';
+      }
+      function byPremium(a, b){
+        var pa = a.premium, pb = b.premium;
+        if (pa === null && pb === null) return 0;
+        if (pa === null) return 1;
+        if (pb === null) return -1;
+        return pa - pb;
+      }
+
+      /* ================= Card rendering ================= */
+      function cardHTML(p, starReason){
+        var isStar = !!starReason;
+        var mainPingTxt = (p.mainPing === null) ? "未提供" : p.mainPing + " 坪";
+        var html = '';
+        html += '<article class="card' + (isStar ? ' star-card' : '') + '" data-id="' + p.id + '">';
+        html += '<div class="card-main">';
+        html += '<div class="card-top"><h3 class="card-name">' + esc(p.name) + '<span class="area-tag">' + esc(p.area) + '</span></h3>';
+        html += '<div class="price"><div class="amount">' + p.price.toLocaleString("zh-Hant") + '</div><div class="unit">萬元・開價</div></div></div>';
+        html += '<div class="badges">' + premiumBadge(p) + growthBadge(p);
+        if (isStar) html += '<span class="badge star-badge">★ 特別推薦</span>';
+        if (p.conditional) html += '<span class="badge cond">條件式</span>';
+        if (p.note) html += '<span class="badge flat">' + esc(p.note) + '</span>';
+        html += '</div>';
+        if (p.conditional) html += '<p style="margin:10px 0 0;font-size:14px;color:var(--warn);font-weight:700">條件式：' + esc(p.conditionalWhy) + '</p>';
+        html += '<div class="specs">'
+          + '<div><span class="k">主＋陽</span><span class="v">' + mainPingTxt + '</span></div>'
+          + '<div><span class="k">建坪</span><span class="v">' + p.totalPing + ' 坪</span></div>'
+          + '<div><span class="k">屋齡</span><span class="v">' + p.age + ' 年</span></div>'
+          + '<div><span class="k">格局</span><span class="v">' + esc(p.layout) + '</span></div>'
+          + '</div>';
+        html += '<p style="margin:10px 0 0;font-size:14px;color:var(--ink-2)"><strong style="color:var(--ink)">車位：</strong>' + esc(p.parking) + '</p>';
+        if (isStar) html += '<div class="star-reason"><span class="lbl">★ 特別推薦理由</span>' + esc(starReason) + '</div>';
+        html += '<div class="card-actions">'
+          + '<a class="btn btn-primary" href="' + esc(p.url) + '">開啟物件頁 ↗</a>'
+          + '<button class="btn btn-ghost" type="button" aria-expanded="false" data-toggle="' + p.id + '">完整內容 <span class="chev" aria-hidden="true">▾</span></button>'
+          + '</div>';
+        html += '</div>';
+        html += '<div class="card-detail" id="detail-' + p.id + '" hidden>';
+        html += '<div class="detail-grid">'
+          + '<div class="detail-item wide anchor-box"><span class="k">建議出價錨點</span><span class="v">' + esc(p.anchor) + '</span></div>'
+          + '<div class="detail-item wide"><span class="k">實登對照</span><span class="v">' + esc(p.actual) + '</span></div>'
+          + '<div class="detail-item"><span class="k">推薦理由</span><span class="v">' + esc(p.pros) + '</span></div>'
+          + '<div class="detail-item"><span class="k">主要缺點</span><span class="v">' + esc(p.cons) + '</span></div>'
+          + '<div class="detail-item wide"><span class="k">增值空間：' + esc(p.growth) + '</span><span class="v">' + esc(p.growthWhy) + '</span></div>'
+          + '<div class="detail-item"><span class="k">公園・遛狗</span><span class="v">' + esc(p.park || "—") + '</span></div>'
+          + '<div class="detail-item"><span class="k">通勤</span><span class="v">' + esc(p.commute || "—") + '</span></div>'
+          + '</div>';
+        html += '</div></article>';
+        return html;
+      }
+
+      /* ================= Day rendering ================= */
+      var dayView = document.getElementById("dayView");
+      var statusEl = document.getElementById("status");
+
+      function renderDay(){
+        var day = dayByDate(state.date);
+        if (!day) { renderError("找不到這一天的資料。"); return; }
+        var items = day.ids.map(function(id){ return PROPERTIES[id]; }).filter(Boolean);
+        var starMap = {};
+        day.stars.forEach(function(s){ starMap[s.id] = s.reason; });
+
+        var html = '';
+        html += '<div class="day-head"><h1>' + fmtFull(day.date) + '（' + weekday(day.date) + '）・' + items.length + ' 間</h1>'
+          + '<p class="sub">桃園自住購屋每日名單｜總價 2,000 萬內含車位・5 區・當日公布名單</p>'
+          + '<p class="cond-line">篩選條件：夫妻＋1 狗自住、2+1 或 3 房、屋齡 20 年內、可直接入住、近大公園遛狗；排序以開價對實價登錄的溢價由低到高。</p></div>';
+
+        if (day.changes && day.changes.length) {
+          html += '<section class="changes" aria-label="今日異動"><h2>⚠ 今日異動</h2><ul>';
+          day.changes.forEach(function(c){ html += '<li>' + esc(c) + '</li>'; });
+          html += '</ul></section>';
+        }
+
+        if (day.note) html += '<div class="day-note"><strong>當日說明：</strong>' + esc(day.note) + '</div>';
+
+        if (items.length === 0) {
+          html += '<div class="state-box" role="status"><p class="big">今天沒有新的合格物件</p><p>當日新發現的物件中，沒有符合全部條件（總價含車位 2,000 萬內、屋齡 20 年內、可直接入住、有照片且仍在刊登）的一間；不拿舊物件或不合條件的物件湊數，隔天會再重新搜尋。</p></div>';
+          dayView.innerHTML = html;
+          afterRender(day);
+          return;
+        }
+
+        /* Star section */
+        var stars = items.filter(function(p){ return starMap[p.id]; });
+        if (stars.length) {
+          html += '<section aria-label="特別推薦" id="starSection"><h2 class="section-title">★ 特別推薦 <span class="hint">今天最值得優先約看</span></h2>';
+          stars.forEach(function(p){ html += cardHTML(p, starMap[p.id]); });
+          html += '</section>';
+        }
+
+        /* Filters + list */
+        var rest = items.filter(function(p){ return !starMap[p.id]; });
+        html += '<section aria-label="當日名單"><h2 class="section-title">' + (stars.length ? '其餘物件' : '當日名單') + ' <span class="hint">點「完整內容」看實登對照與出價錨點</span></h2>';
+        html += '<div class="filters"><div class="chips" role="group" aria-label="依區域篩選">';
+        AREAS.forEach(function(a){
+          html += '<button class="chip" type="button" data-area="' + a + '" aria-pressed="' + (state.area === a) + '">' + a + '</button>';
+        });
+        html += '</div><div class="row"><label for="sortSelect">排序</label>'
+          + '<select class="sort-select" id="sortSelect">'
+          + '<option value="premium"' + (state.sort==="premium"?" selected":"") + '>溢價低 → 高</option>'
+          + '<option value="price"' + (state.sort==="price"?" selected":"") + '>總價低 → 高</option>'
+          + '<option value="ping"' + (state.sort==="ping"?" selected":"") + '>建坪大 → 小</option>'
+          + '</select></div></div>';
+        html += '<div id="listWrap" style="margin-top:14px"></div></section>';
+
+        dayView.innerHTML = html;
+        renderList(rest);
+        bindDayControls(rest);
+        afterRender(day);
+      }
+
+      function renderList(rest){
+        var wrap = document.getElementById("listWrap");
+        if (!wrap) return;
+        var list = rest.slice();
+        if (state.area !== "全部") list = list.filter(function(p){ return p.area === state.area; });
+        if (state.sort === "premium") list.sort(byPremium);
+        else if (state.sort === "price") list.sort(function(a,b){ return a.price - b.price; });
+        else if (state.sort === "ping") list.sort(function(a,b){ return b.totalPing - a.totalPing; });
+        if (!list.length) {
+          wrap.innerHTML = '<div class="state-box" role="status"><p class="big">這個區域今天沒有物件</p><p>換一個區域，或切回「全部」看今天的完整名單。</p></div>';
+          return;
+        }
+        wrap.innerHTML = list.map(function(p){ return cardHTML(p, null); }).join("");
+        bindToggles(wrap);
+      }
+
+      function bindToggles(scope){
+        var btns = scope.querySelectorAll("[data-toggle]");
+        for (var i=0;i<btns.length;i++) {
+          btns[i].addEventListener("click", function(){
+            var id = this.getAttribute("data-toggle");
+            var panel = document.getElementById("detail-" + id);
+            if (!panel) return;
+            var open = this.getAttribute("aria-expanded") === "true";
+            this.setAttribute("aria-expanded", String(!open));
+            panel.hidden = open;
+            this.firstChild.textContent = open ? "完整內容 " : "收起 ";
+          });
+        }
+      }
+
+      function bindDayControls(rest){
+        var chips = dayView.querySelectorAll("[data-area]");
+        for (var i=0;i<chips.length;i++) {
+          chips[i].addEventListener("click", function(){
+            state.area = this.getAttribute("data-area");
+            var all = dayView.querySelectorAll("[data-area]");
+            for (var j=0;j<all.length;j++) all[j].setAttribute("aria-pressed", String(all[j] === this));
+            renderList(rest);
+          });
+        }
+        var sel = document.getElementById("sortSelect");
+        if (sel) sel.addEventListener("change", function(){ state.sort = this.value; renderList(rest); });
+        var starSec = document.getElementById("starSection");
+        if (starSec) bindToggles(starSec);
+      }
+
+      function renderError(msg){
+        dayView.innerHTML = '<div class="state-box error-box" role="alert"><p class="big">資料載入失敗</p><p>' + esc(msg) + ' 請重新開啟頁面再試一次。</p></div>';
+      }
+
+      function afterRender(day){
+        renderDateBar();
+        renderHistory();
+        statusEl.textContent = "目前顯示：" + fmtFull(day.date) + "（" + weekday(day.date) + "），共 " + day.ids.length + " 間。";
+      }
+
+      /* ================= Date bar & history ================= */
+      var pillsEl = document.getElementById("datePills");
+      var monthSel = document.getElementById("monthSelect");
+      var prevBtn = document.getElementById("prevDay");
+      var nextBtn = document.getElementById("nextDay");
+      var todayBtn = document.getElementById("todayBtn");
+
+      function renderDateBar(){
+        var recent = DAYS.slice(-7);
+        pillsEl.innerHTML = recent.map(function(d){
+          var day = d; var items = day.ids.length;
+          var rel = relLabel(day.date);
+          var label = (rel ? rel + " " : "") + fmtShort(day.date) + "（" + weekday(day.date) + "）・" + items + " 間";
+          var cur = day.date === state.date ? ' aria-current="date"' : '';
+          return '<button class="date-pill" type="button" data-date="' + day.date + '"' + cur + '>' + label + '</button>';
+        }).join("");
+        var pills = pillsEl.querySelectorAll("[data-date]");
+        for (var i=0;i<pills.length;i++) {
+          pills[i].addEventListener("click", function(){ goToDate(this.getAttribute("data-date")); });
+        }
+        /* Month-grouped jump select: only dates with data */
+        var groups = {};
+        DAYS.forEach(function(d){ var k = d.date.slice(0,7); (groups[k] = groups[k] || []).push(d); });
+        var mh = '';
+        Object.keys(groups).sort().reverse().forEach(function(k){
+          var parts = k.split("-");
+          mh += '<optgroup label="' + parts[0] + " 年 " + (+parts[1]) + ' 月">';
+          groups[k].slice().reverse().forEach(function(d){
+            mh += '<option value="' + d.date + '"' + (d.date === state.date ? " selected" : "") + '>' + fmtShort(d.date) + '（' + weekday(d.date) + '）・' + d.ids.length + ' 間</option>';
+          });
+          mh += '</optgroup>';
+        });
+        monthSel.innerHTML = mh;
+        monthSel.value = state.date;
+
+        var idx = DAYS.findIndex(function(d){ return d.date === state.date; });
+        prevBtn.disabled = idx <= 0;
+        nextBtn.disabled = idx < 0 || idx >= DAYS.length - 1;
+        todayBtn.disabled = state.date === latestDate;
+        var cur = pillsEl.querySelector('[aria-current="date"]');
+        if (cur) cur.scrollIntoView({ block:"nearest", inline:"nearest" });
+      }
+
+      function renderHistory(){
+        var el = document.getElementById("historyList");
+        var rows = DAYS.slice().reverse().map(function(d){
+          var items = d.ids.map(function(id){ return PROPERTIES[id]; }).filter(Boolean);
+          var withPrem = items.filter(function(p){ return p.premium !== null; });
+          var lowest = withPrem.length ? Math.min.apply(null, withPrem.map(function(p){ return p.premium; })) : null;
+          var lowestTxt = lowest === null ? "無溢價數字" : (lowest < 0 ? "最低溢價 −" + Math.abs(lowest) + "%" : "最低溢價 +" + lowest + "%");
+          var starNames = d.stars.map(function(s){ return PROPERTIES[s.id] ? PROPERTIES[s.id].name : s.id; });
+          var starTxt = starNames.length ? "★特別推薦：" + starNames.join("、") : "★特別推薦：無";
+          var cur = d.date === state.date ? ' aria-current="date"' : '';
+          return '<button class="history-row" type="button" data-date="' + d.date + '"' + cur + '>'
+            + '<span class="d">' + fmtFull(d.date) + '（' + weekday(d.date) + '）' + (relLabel(d.date) ? '・' + relLabel(d.date) : '') + '</span>'
+            + '<span class="go">' + d.ids.length + ' 間 ›</span>'
+            + '<span class="meta">' + starTxt + '｜' + lowestTxt + '</span></button>';
+        }).join("");
+        el.innerHTML = rows;
+        var btns = el.querySelectorAll("[data-date]");
+        for (var i=0;i<btns.length;i++) btns[i].addEventListener("click", function(){
+          goToDate(this.getAttribute("data-date"));
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      }
+
+      /* ================= Navigation ================= */
+      function goToDate(dateStr, pushHash){
+        if (!dayByDate(dateStr)) return;
+        if (dateStr === state.date && pushHash !== true) { renderDateBar(); renderHistory(); return; }
+        state.date = dateStr;
+        state.area = "全部";
+        if (pushHash !== false) {
+          if (location.hash !== "#" + dateStr) { suppressHash = true; location.hash = dateStr; }
+        }
+        renderDay();
+      }
+      function stepDay(delta){
+        var idx = DAYS.findIndex(function(d){ return d.date === state.date; });
+        var next = idx + delta;
+        if (next < 0 || next >= DAYS.length) return;
+        goToDate(DAYS[next].date);
+      }
+      prevBtn.addEventListener("click", function(){ stepDay(-1); });
+      nextBtn.addEventListener("click", function(){ stepDay(1); });
+      todayBtn.addEventListener("click", function(){ goToDate(latestDate); });
+      monthSel.addEventListener("change", function(){ goToDate(this.value); });
+
+      document.addEventListener("keydown", function(e){
+        var t = e.target;
+        if (t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA")) return;
+        if (e.key === "ArrowLeft") { stepDay(-1); }
+        else if (e.key === "ArrowRight") { stepDay(1); }
+      });
+
+      /* NOTE: No global touch/swipe day-switching. A document-level touchend
+         handler that re-renders the list can destroy the tapped element
+         before its click fires, and target="_blank" new-window requests are
+         silently dropped by some mobile webviews — both made the listing
+         links feel dead on phones. Day switching stays on the ‹ › buttons,
+         the date pills/select, and ← → keys. */
+
+      var suppressHash = false;
+      window.addEventListener("hashchange", function(){
+        if (suppressHash) { suppressHash = false; return; }
+        var h = location.hash.replace("#","");
+        if (h && dayByDate(h) && h !== state.date) goToDate(h, false);
+      });
+
+      /* ================= Boot (loading state -> content / error) ================= */
+      function boot(){
+        statusEl.textContent = "";
+        dayView.innerHTML = '<div class="skeleton" aria-hidden="true"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div><p class="sr-only" role="status">載入中…</p>';
+        setTimeout(function(){
+          try {
+            if (!DAYS.length || !Object.keys(PROPERTIES).length) throw new Error("名單資料是空的。");
+            var h = location.hash.replace("#","");
+            state.date = (h && dayByDate(h)) ? h : latestDate;
+            renderDay();
+          } catch (err) {
+            renderError(err && err.message ? err.message : "發生未知錯誤。");
+          }
+        }, 250);
+      }
+      boot();
+    </script>
+  </body>
+</html>
