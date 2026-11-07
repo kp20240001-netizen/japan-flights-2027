@@ -161,6 +161,11 @@
       .cmp-area { font-size: 12.5px; color: var(--ink-3); display: block; }
       .cmp-note { font-size: 12.5px; color: var(--ink-3); margin: 8px 0 0; }
 
+      .card-photo {
+        display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+        border-bottom: 1px solid var(--line); background: var(--surface-2);
+      }
+
       /* ---------- Cards (A: 格線即裝飾, no shadow) ---------- */
       .card {
         background: var(--surface); border: 1px solid var(--line-strong);
@@ -329,7 +334,7 @@
     <script>
       /* ================= Data (baked snapshot) ================= */
       var PROPERTIES = {
-        jingcheng: { id:"jingcheng", name:"景程禾雅", area:"鶯歌鳳鳴", url:"https://buy.yungching.com.tw/house/7402344",
+        jingcheng: { id:"jingcheng", img:"https://yccdn.yungching.com.tw/v1/image/?key=NF58Ko5oaCtLwSaJZlSKDYdL5TOvA-OVBMM2BmIkWllss4R1Oc99VzHYWXNM2aa_qVhtUUJ4lA_cF1mBh5MY1RWd5eEaa7mn9qxu8f6s-rtKfVoBsurTgAnsNQ3b1ueVZBTVyE902uGua3iB7hgAAKPHTL2hxmCpYvJvW1CAemCnvFN7nCVaZX21v14UxXNsfG2teulhvTJFchn-Kai2cHxqHxwwV499hQFGymqo8g21doSW1ZZihJMNdK9xPvs2Ek0ZxqAri0pt0RURl6ZlTw&width=1024&height=768", name:"景程禾雅", area:"鶯歌鳳鳴", url:"https://buy.yungching.com.tw/house/7402344",
           price:1788, age:6.3, totalPing:45.31, mainPing:23.45, layout:"3房2廳2衛", parking:"坡道平面固定車位",
           actual:"同社區近一年成交均價約 38.8 萬/坪，開價約 39.5 萬/坪，僅高約 2%", premium:2, anchor:"1,700–1,740 萬",
           pros:"溫馨裝潢、屋況維護好可直接入住，溢價僅約 2%、貼近實登", cons:"鳳鳴機能仍在發展、離桃園市區較遠",
@@ -341,49 +346,49 @@
           pros:"室內空間最大（主+陽 24.11 坪），價格最貼近實登", cons:"屋齡 12.4 年是名單中較舊者",
           growth:"中", growthWhy:"大有是成熟生活圈、新供給少、單價相對桃園熱區偏低，有市區外溢的補漲與保值條件；但沒有大型建設題材，漲幅溫和",
           park:"近大有梯田生態公園", commute:"車程約 10 分鐘上國道一號南崁交流道", note:"" },
-        xiamuni: { id:"xiamuni", name:"麗寶南法莊園-霞慕尼 2F", area:"小檜溪", url:"https://sale.591.com.tw/home/house/detail/2/20878914.html",
+        xiamuni: { id:"xiamuni", img:"https://img2.591.com.tw/house/2026/09/23/179014337776303702.jpg!1000x.water2.jpg", name:"麗寶南法莊園-霞慕尼 2F", area:"小檜溪", url:"https://sale.591.com.tw/home/house/detail/2/20878914.html",
           price:1668, age:1, totalPing:38.71, mainPing:18.5, layout:"2+1房2廳2衛", parking:"平面式車位（已含售金內）",
           actual:"開價單價約 43.1 萬/坪，低於社區近一年均價約 52.4 萬/坪約 18%", premium:-18, anchor:"1,600–1,680 萬",
           pros:"小檜溪難得出現的合格物件，1 年新屋、簡易裝潢可直接入住，雙衛浴", cons:"主建物偏小；刊登有效期只到 2026-11-08，要看要快",
           growth:"中", growthWhy:"市中心新重劃區、定位高，鄰近桃園車站商圈，捷運綠線施工中（通車時程未定案）；本戶開價低於社區均價約 18%，入手基期相對低",
           park:"近小檜溪水岸步道", commute:"上交流道較遠", note:"" },
-        xiangyang: { id:"xiangyang", name:"向陽綻", area:"中路", url:"https://sale.591.com.tw/home/house/detail/2/20945240.html",
+        xiangyang: { id:"xiangyang", img:"https://img2.591.com.tw/house/2026/10/13/179188134884866002.jpg!1000x.water2.jpg", name:"向陽綻", area:"中路", url:"https://sale.591.com.tw/home/house/detail/2/20945240.html",
           price:1758, age:1, totalPing:47.47, mainPing:20, layout:"3房2廳2衛", parking:"平面式車位",
           actual:"同社區最近一筆成交總價 1,766 萬，開價總價略低", premium:null, premiumLabel:"開價略低於最近一筆成交", anchor:"1,680–1,700 萬",
           pros:"向陽公園旁步行 2 分鐘，遛狗與上南桃園交流道條件最強，全新交屋", cons:"需向仲介確認已交屋成屋身分；全新未裝潢，冷氣窗簾需小額添置",
           growth:"中", growthWhy:"中路是桃園發展最快的重劃區之一，鄰市政府與司法園區、人口移入強；但新案供給量大、單價已在高檔，增值看供給消化速度",
           park:"向陽公園旁，步行約 2 分鐘", commute:"近南桃園交流道", note:"" },
-        wish: { id:"wish", name:"WISH歐洲 13F", area:"三峽北大", url:"https://sale.591.com.tw/home/house/detail/2/21085325.html",
+        wish: { id:"wish", img:"https://img1.591.com.tw/house/2026/10/15/179207026958850304.jpg!1000x.water2.jpg", name:"WISH歐洲 13F", area:"三峽北大", url:"https://sale.591.com.tw/home/house/detail/2/21085325.html",
           price:1888, age:20, totalPing:45.69, mainPing:null, layout:"3房2廳2衛", parking:"平面式車位",
           actual:"開價扣車位單價約 49.8 萬/坪，比北大近一年均價高約 7–11%", premium:9, anchor:"1,800–1,850 萬",
           pros:"簡易裝潢、近公園綠地，北大生活機能最成熟", cons:"屋齡 20 年正好在上限邊緣，管線與公設維護要現場多看",
           growth:"小", growthWhy:"北大機能成熟、三鶯線是主要題材（通車時程未定案），但屋齡已 20 年，增值主要靠地段，建物折舊會吃掉一部分",
           park:"近公園綠地", commute:"", note:"" },
-        dulele: { id:"dulele", name:"合新讀樂樂", area:"中路", url:"https://buy.houseprice.tw/house/39064479_2780404/",
+        dulele: { id:"dulele", img:"https://yccdn.yungching.com.tw/v1/image/?key=NF58Ko5oaCsLTDpcfd3BY4ppvryGN7waoOHtl8R77ZiDGrweGGqFDuOy7iuNkE2KqVhtUUJ4lA_cF1mBh5MY1RWd5eEaa7mn9qxu8f6s-rs3QB1qzhlP20dQWbTXPeiPJpfT6ht43JBkfHZIEYYrhnkoH-bgreuyG3bH_0n8M4u4ncJw8Wjg6jbJ7CWKSNRJAlhmlNw-JqAXdLVNcPRYYeRdAVcK1EUebtA6t4KrpHTw2vMAzJ0suiXctQpwafdJ&width=1024&height=768", name:"合新讀樂樂", area:"中路", url:"https://buy.houseprice.tw/house/39064479_2780404/",
           price:1888, age:7.5, totalPing:50.63, mainPing:25.52, layout:"3房2廳2衛", parking:"坡道平面車位",
           actual:"同社區近一年均價 41.1 萬/坪，開價扣車位單價約 45.2 萬/坪，高約 10%", premium:10, anchor:"1,730–1,800 萬",
           pros:"已降價 80 萬、6 天前新上架，前後陽台、衛浴開窗", cons:"3 樓低樓層，採光視野受限；裝潢程度未明載，要看房確認能否直接入住",
           growth:"中", growthWhy:"中路區域動能強、人口移入多，但供給大、基期已高；本戶剛降價 80 萬，入手價有往實登靠攏的空間",
           park:"近水秀、風禾公園一帶", commute:"", note:"已降價 80 萬" },
-        dunpin: { id:"dunpin", name:"大睦敦品 11F", area:"大有", url:"https://buy.houseprice.tw/house/39077129_921338/",
+        dunpin: { id:"dunpin", img:"https://yccdn.yungching.com.tw/v1/image/?key=NF58Ko5oaCu113F86sl6YdghX9g0MjPhnrdH8xl3M3cG2jxKuDS5tSyZSMJF8PS4qVhtUUJ4lA_cF1mBh5MY1RWd5eEaa7mn9qxu8f6s-rs3QB1qzhlP20dQWbTXPeiPJpfT6ht43JBkfHZIEYYrhnkoH-bgreuyG3bH_0n8M4u4ncJw8Wjg6jbJ7CWKSNRJAlhmlNw-JqAXdLVNcPRYYeRdAVcK1EUebtA6t4KrpHTw2vMAzJ0suiXctQpwafdJ&width=1024&height=768", name:"大睦敦品 11F", area:"大有", url:"https://buy.houseprice.tw/house/39077129_921338/",
           price:1850, age:4.8, totalPing:51.18, mainPing:27.01, layout:"3房2廳2衛", parking:"坡道平面車位",
           actual:"同社區同戶型 112 年 7 月成交 1,687 萬，開價高約 9.7%", premium:9.7, anchor:"1,700–1,750 萬",
           pros:"大有少見的 5 年內輕屋齡三房平車，主+陽 27 坪實在，24 小時管理", cons:"公設比 35% 偏高；開價比同戶型實價高約一成",
           growth:"中", growthWhy:"4.8 年輕屋齡在大有新案稀少、相對稀缺，保值性好；區段缺大型建設題材，增值靠市區外溢，溫和向上",
           park:"近大有梯田生態公園、桃林步道", commute:"", note:"" },
-        shangbeida: { id:"shangbeida", name:"上北大 3F", area:"三峽北大", url:"https://sale.591.com.tw/home/house/detail/2/21103256.html",
+        shangbeida: { id:"shangbeida", img:"https://img2.591.com.tw/house/2026/10/19/179238092586899507.jpg!1000x.water2.jpg", name:"上北大 3F", area:"三峽北大", url:"https://sale.591.com.tw/home/house/detail/2/21103256.html",
           price:1980, age:19, totalPing:44.75, mainPing:null, layout:"3房2廳2衛", parking:"平面式車位",
           actual:"同社區 115 年 5 月成交 1,760 萬含車位（45.12 坪），開價高約 12%", premium:12, anchor:"1,780–1,850 萬",
           pros:"格局方正、素雅裝潢可直接入住，面向中庭不吵雜，近公園與學校", cons:"屋齡 19 年偏高，總價逼近上限，議價空間有限",
           growth:"小", growthWhy:"19 年屋齡、總價已逼近 2000 萬上限，入手基期不低；三鶯線題材未定案，增值空間相對有限",
           park:"近公園與國小國中", commute:"經學成路約 5–10 分鐘上三鶯交流道", note:"" },
-        chengshi: { id:"chengshi", name:"丞石菁英薈 5F", area:"鶯歌鳳鳴", url:"https://buy.houseprice.tw/house/39083575_1746052/",
+        chengshi: { id:"chengshi", img:"https://image.houseprice.tw/p1-hpimage/MTM5MzQyMjdocGltYWdl/086926c26ca643fa_800x600.jpg", name:"丞石菁英薈 5F", area:"鶯歌鳳鳴", url:"https://buy.houseprice.tw/house/39083575_1746052/",
           price:1980, age:9, totalPing:55.12, mainPing:28.99, layout:"3房2廳2衛", parking:"坡道平面車位",
           actual:"同社區同型 114 年 6 月成交 1,600 萬，開價高約 24%", premium:24, anchor:"1,650–1,750 萬",
           pros:"前後陽台、通風採光好，社區管理完善，坪數最大", cons:"溢價偏高，總價逼近上限，出價要守住錨點",
           growth:"小", growthWhy:"鳳鳴的低基期和建設題材都在，但開價高於同型成交約 24%，增值要先等行情追上開價；議價到錨點後空間會明顯好轉",
           park:"近鳳鳴公園、鳳福公園", commute:"車程約 5–10 分鐘上大湳交流道", note:"" },
-        hefa: { id:"hefa", name:"和發天鑽", area:"大有", url:"https://buy.yungching.com.tw/house/7553853",
+        hefa: { id:"hefa", img:"https://yccdn.yungching.com.tw/v1/image/?key=NF58Ko5oaCsgQisPo0E8ncxF5IB2-ZIKpS5kYmnEtdjPQrZvoQdxhuIp2PsXYt4AqVhtUUJ4lA_cF1mBh5MY1RWd5eEaa7mn9qxu8f6s-rtKfVoBsurTgAnsNQ3b1ueVa0jD0JJgeWt02Xc92Hgeax9ptXAdU5ZuHyqQdxAoaDgB84hAAJBJ-aPJnP6QjjHNJdO-8s9VPXXQ_ruSEFqcK8ShYsvown2RKluDB4vs3XCba78wTuCNPINc3dOPPQMQruh-Gt23mTzaYgmqa__ngegw_kxkxkdM5Y2LgriectG9txh5JQn0mw&width=1024&height=768", name:"和發天鑽", area:"大有", url:"https://buy.yungching.com.tw/house/7553853",
           price:1598, age:7.6, totalPing:42.29, mainPing:20.94, layout:"3房2廳1衛", parking:"坡道平面固定車位",
           actual:"同社區近一年無成交揭露，以大有商圈行情推估，開價偏高", premium:null, premiumLabel:"無同社區實登揭露", anchor:"1,450–1,500 萬",
           pros:"7.6 年輕屋齡＋平面固定車位＋格局方正，總價最低", cons:"僅 1 衛浴，主+陽 20.94 坪偏小",
@@ -513,6 +518,7 @@
         var mainPingTxt = (p.mainPing === null) ? "未提供" : p.mainPing + " 坪";
         var html = '';
         html += '<article class="card' + (isStar ? ' star-card' : '') + '" data-id="' + p.id + '">';
+        if (p.img) html += '<img class="card-photo" src="' + esc(p.img) + '" alt="' + esc(p.name) + ' 封面照片（來源：刊登頁）" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">';
         html += '<div class="card-main">';
         html += '<div class="card-top"><h3 class="card-name">' + esc(p.name) + '<span class="area-tag">' + esc(p.area) + '</span></h3>';
         html += '<div class="price"><div class="amount">' + p.price.toLocaleString("zh-Hant") + '</div><div class="unit">萬元・開價</div></div></div>';
