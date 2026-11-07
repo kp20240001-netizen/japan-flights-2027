@@ -8,58 +8,47 @@
     <title>桃園購屋每日名單</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;700;900&display=swap" rel="stylesheet" />
     <style>
-      /* ---------- Design tokens ---------- */
+      /* ---------- Design tokens (A+B: 白の間 × 住のカタログ) ----------
+         生成り白底 + 墨 + 單一強調色（深藍）。格線即裝飾、襯線數字、
+         直書點綴。色彩紀律：底 + 墨 + 強調 ≤3 色（功能警示色除外）。 */
       :root {
-        --bg: #f7f5f1;
-        --surface: #ffffff;
-        --surface-2: #efede7;
-        --ink: #1d2420;
-        --ink-2: #4c554f;
-        --ink-3: #6b756e;
-        --line: #ddd8cd;
-        --accent: #14604c;
-        --accent-ink: #0d4a3a;
-        --accent-soft: #e2efe9;
-        --star: #8a5a00;
-        --star-soft: #fdf3dd;
-        --warn: #8a3b12;
-        --warn-soft: #fbeedd;
-        --good: #14604c;
-        --good-soft: #e2efe9;
-        --mid: #7a5b00;
-        --mid-soft: #f7efda;
-        --high: #9c2b1b;
-        --high-soft: #fbe9e4;
-        --radius: 14px;
-        --radius-sm: 9px;
-        --shadow: 0 1px 2px rgba(29, 36, 32, .06), 0 4px 14px rgba(29, 36, 32, .05);
+        --bg: #FAFAF8;
+        --surface: #FFFFFF;
+        --surface-2: #F1EFE9;
+        --ink: #1F1F1F;
+        --ink-2: #4A4A45;
+        --ink-3: #6B6B62;
+        --line: #E4E2D9;
+        --line-strong: #C8C5B8;
+        --accent: #2B4C6F;
+        --accent-ink: #1E3A56;
+        --accent-soft: #E9EEF4;
+        --warn: #8A2F1B;
+        --warn-line: #D8A79B;
+        --high: #9C2B1B;
+        --radius: 0px;
+        --radius-sm: 3px;
         --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+        --font-serif: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
       }
       @media (prefers-color-scheme: dark) {
         :root {
-          --bg: #141714;
-          --surface: #1e221e;
-          --surface-2: #272b27;
-          --ink: #eef1ec;
-          --ink-2: #c3cbc2;
-          --ink-3: #9aa79b;
-          --line: #39403a;
-          --accent: #5cc79e;
-          --accent-ink: #8fe0bf;
-          --accent-soft: #1d332a;
-          --star: #f0c169;
-          --star-soft: #3a2f14;
-          --warn: #f2b183;
-          --warn-soft: #3d2716;
-          --good: #5cc79e;
-          --good-soft: #1d332a;
-          --mid: #e8cd7d;
-          --mid-soft: #38300f;
-          --high: #f0937f;
-          --high-soft: #3d1f18;
-          --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+          --bg: #131518;
+          --surface: #1B1E23;
+          --surface-2: #23262C;
+          --ink: #ECEEF0;
+          --ink-2: #C6CAD0;
+          --ink-3: #9BA1A9;
+          --line: #2E3238;
+          --line-strong: #454B53;
+          --accent: #8FB0D8;
+          --accent-ink: #A9C4E6;
+          --accent-soft: #22314A;
+          --warn: #E8A58F;
+          --warn-line: #6E3A30;
+          --high: #F0937F;
         }
       }
 
@@ -71,9 +60,9 @@
         color: var(--ink);
         font-family: var(--font);
         font-size: 16px;
-        line-height: 1.6;
+        line-height: 1.75;
       }
-      :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+      :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
       button { font-family: inherit; cursor: pointer; }
       a { color: var(--accent-ink); }
 
@@ -83,7 +72,7 @@
       .datebar {
         position: sticky; top: 0; z-index: 20;
         background: var(--bg);
-        border-bottom: 1px solid var(--line);
+        border-bottom: 1px solid var(--line-strong);
         padding: 10px 0 8px;
         margin: 0 -16px; padding-left: 16px; padding-right: 16px;
       }
@@ -91,7 +80,7 @@
       .datebar-row .date-pills { flex: 1 1 auto; }
       .nav-arrow {
         flex: 0 0 auto; width: 44px; height: 44px;
-        border: 1px solid var(--line); border-radius: 999px;
+        border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
         background: var(--surface); color: var(--ink);
         font-size: 20px; line-height: 1; display: grid; place-items: center;
       }
@@ -103,48 +92,54 @@
       .date-pills::-webkit-scrollbar { display: none; }
       .date-pill {
         flex: 0 0 auto; min-height: 44px; padding: 8px 14px;
-        border: 1px solid var(--line); border-radius: 999px;
+        border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
         background: var(--surface); color: var(--ink);
         font-size: 14px; font-weight: 500; white-space: nowrap;
       }
       .date-pill[aria-current="date"] {
-        background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700;
-      }
-      @media (prefers-color-scheme: dark) {
-        .date-pill[aria-current="date"] { color: #0c1a14; }
+        background: var(--ink); border-color: var(--ink); color: var(--bg); font-weight: 700;
       }
       .datebar-sub { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
       @media (max-width: 560px) {
         .date-pill { padding: 8px 11px; font-size: 13.5px; }
-        .datebar-sub .nav-arrow { width: 44px; height: 44px; }
       }
       .month-select, .sort-select {
         min-height: 44px; padding: 8px 10px; font-size: 14px;
-        border: 1px solid var(--line); border-radius: var(--radius-sm);
+        border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
         background: var(--surface); color: var(--ink); font-family: inherit;
       }
       .today-btn {
         min-height: 44px; padding: 8px 14px;
-        border: 1px solid var(--accent); border-radius: 999px;
-        background: var(--accent-soft); color: var(--accent-ink);
+        border: 1px solid var(--accent); border-radius: var(--radius-sm);
+        background: transparent; color: var(--accent-ink);
         font-size: 14px; font-weight: 700;
       }
-      .today-btn:disabled { opacity: .4; border-color: var(--line); background: var(--surface-2); color: var(--ink-3); }
+      .today-btn:disabled { opacity: .4; border-color: var(--line); color: var(--ink-3); }
 
-      /* ---------- Day heading ---------- */
-      .day-head { padding: 22px 0 4px; }
-      .day-head h1 { font-size: 26px; font-weight: 900; margin: 0 0 4px; letter-spacing: .01em; }
-      .day-head .sub { color: var(--ink-2); font-size: 15px; margin: 0; }
+      /* ---------- Day heading (editorial masthead) ---------- */
+      .day-head { position: relative; padding: 26px 38px 6px 0; }
+      .day-head h1 {
+        font-family: var(--font-serif); font-size: 27px; font-weight: 700;
+        margin: 0 0 4px; letter-spacing: .02em; font-variant-numeric: tabular-nums;
+      }
+      .day-head .sub { color: var(--ink-2); font-size: 14.5px; margin: 0; }
+      .day-head .vert {
+        position: absolute; right: 2px; top: 24px;
+        writing-mode: vertical-rl; font-family: var(--font-serif);
+        font-size: 13px; letter-spacing: .38em; color: var(--ink-3);
+        user-select: none;
+      }
       .cond-line {
-        margin-top: 10px; font-size: 13.5px; color: var(--ink-2);
+        margin-top: 12px; font-size: 13.5px; color: var(--ink-2);
         background: var(--surface); border: 1px solid var(--line);
-        border-radius: var(--radius-sm); padding: 8px 12px;
+        padding: 8px 12px;
       }
 
       /* ---------- Changes alert ---------- */
       .changes {
-        margin-top: 16px; border: 1px solid var(--warn); border-radius: var(--radius);
-        background: var(--warn-soft); padding: 14px 16px;
+        margin-top: 16px; border: 1px solid var(--line);
+        border-left: 3px solid var(--warn);
+        background: var(--surface); padding: 14px 16px;
       }
       .changes h2 { margin: 0 0 6px; font-size: 16px; color: var(--warn); display: flex; align-items: center; gap: 8px; }
       .changes ul { margin: 0; padding-left: 20px; }
@@ -154,57 +149,84 @@
       .day-note {
         margin-top: 16px; font-size: 14.5px; color: var(--ink-2);
         background: var(--surface); border: 1px solid var(--line);
-        border-radius: var(--radius); padding: 12px 16px;
+        padding: 12px 16px;
       }
       .day-note strong { color: var(--ink); }
 
       /* ---------- Sections ---------- */
-      .section-title { font-size: 19px; font-weight: 900; margin: 28px 0 12px; display: flex; align-items: baseline; gap: 8px; }
-      .section-title .hint { font-size: 13px; font-weight: 400; color: var(--ink-3); }
-
-      /* ---------- Cards ---------- */
-      .card {
-        background: var(--surface); border: 1px solid var(--line);
-        border-radius: var(--radius); box-shadow: var(--shadow);
-        margin-bottom: 12px; overflow: hidden;
+      .section-title {
+        font-family: var(--font-serif); font-size: 20px; font-weight: 700;
+        margin: 32px 0 14px; display: flex; align-items: center; gap: 12px;
       }
-      .card.star-card { border: 2px solid var(--star); }
-      .card-main { padding: 16px; }
+      .section-title::after { content: ""; flex: 1 1 auto; border-top: 1px solid var(--line-strong); }
+      .section-title .hint { font-family: var(--font); font-size: 13px; font-weight: 400; color: var(--ink-3); }
+
+      /* ---------- Compare table (B: 住のカタログ) ---------- */
+      .cmp-wrap { overflow-x: auto; border: 1px solid var(--line-strong); background: var(--surface); }
+      table.cmp { border-collapse: collapse; width: 100%; min-width: 600px; font-size: 14px; }
+      .cmp th, .cmp td { padding: 10px 12px; text-align: left; vertical-align: top; }
+      .cmp thead th {
+        font-size: 12.5px; font-weight: 700; color: var(--ink-3);
+        border-bottom: 1px solid var(--line-strong); white-space: nowrap;
+      }
+      .cmp tbody tr { border-bottom: 1px solid var(--line); cursor: pointer; }
+      .cmp tbody tr:last-child { border-bottom: 0; }
+      .cmp tbody tr:hover, .cmp tbody tr:focus-visible { background: var(--surface-2); }
+      .cmp .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+      .cmp thead .num { text-align: right; }
+      .cmp-name { font-weight: 700; display: block; line-height: 1.45; }
+      .cmp-area { font-size: 12.5px; color: var(--ink-3); display: block; }
+      .cmp-note { font-size: 12.5px; color: var(--ink-3); margin: 8px 0 0; }
+
+      /* ---------- Cards (A: 格線即裝飾, no shadow) ---------- */
+      .card {
+        background: var(--surface); border: 1px solid var(--line-strong);
+        margin-bottom: 12px;
+      }
+      .card.star-card { border-color: var(--accent); box-shadow: inset 0 3px 0 var(--accent); }
+      .card.flash { outline: 3px solid var(--accent); outline-offset: 2px; }
+      .card-main { padding: 18px 16px 16px; }
       .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-      .card-name { font-size: 18px; font-weight: 700; margin: 0; line-height: 1.35; }
+      .card-name { font-family: var(--font-serif); font-size: 19px; font-weight: 700; margin: 0; line-height: 1.4; }
       .card-name .area-tag {
         display: inline-block; vertical-align: 2px; margin-left: 8px;
-        font-size: 12px; font-weight: 700; color: var(--accent-ink);
-        background: var(--accent-soft); border-radius: 999px; padding: 2px 9px;
+        font-family: var(--font); font-size: 12px; font-weight: 700; color: var(--accent-ink);
+        border: 1px solid var(--accent); padding: 1px 8px;
       }
       .price { text-align: right; flex: 0 0 auto; }
-      .price .amount { font-size: 24px; font-weight: 900; line-height: 1.15; }
-      .price .unit { font-size: 13px; color: var(--ink-2); }
-      .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+      .price .amount {
+        font-family: var(--font-serif); font-size: 27px; font-weight: 700;
+        line-height: 1.15; font-variant-numeric: tabular-nums;
+      }
+      .price .unit { font-size: 12.5px; color: var(--ink-3); }
+      .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
       .badge {
-        font-size: 12.5px; font-weight: 700; border-radius: 999px; padding: 3px 10px;
+        font-size: 12.5px; font-weight: 500; padding: 3px 10px;
+        border: 1px solid var(--line-strong); color: var(--ink-2);
         display: inline-flex; align-items: center; gap: 5px;
       }
-      .badge .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: 0 0 auto; }
-      .badge.good { background: var(--good-soft); color: var(--good); }
-      .badge.mid  { background: var(--mid-soft);  color: var(--mid); }
-      .badge.high { background: var(--high-soft); color: var(--high); }
-      .badge.flat { background: var(--surface-2); color: var(--ink-2); }
-      .badge.cond { background: var(--warn-soft); color: var(--warn); border: 1px dashed var(--warn); }
-      .badge.star-badge { background: var(--star-soft); color: var(--star); }
+      .badge .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: 0 0 auto; }
+      .badge.good { color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+      .badge.mid  { color: var(--ink-2); }
+      .badge.high { color: var(--high); border-color: var(--warn-line); font-weight: 700; }
+      .badge.flat { color: var(--ink-2); }
+      .badge.cond { color: var(--warn); border: 1px dashed var(--warn); font-weight: 700; }
+      .badge.star-badge { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+      @media (prefers-color-scheme: dark) { .badge.star-badge { color: #10151d; } }
       .specs {
-        display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 16px;
-        margin-top: 12px; font-size: 14.5px;
+        display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 16px;
+        margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line);
+        font-size: 14.5px;
       }
       @media (min-width: 560px) { .specs { grid-template-columns: repeat(4, 1fr); } }
       .specs .k { color: var(--ink-3); font-size: 12.5px; display: block; }
-      .specs .v { font-weight: 700; }
+      .specs .v { font-weight: 700; font-variant-numeric: tabular-nums; }
       .star-reason {
-        margin-top: 12px; background: var(--star-soft); border-radius: var(--radius-sm);
-        padding: 12px 14px; font-size: 15px;
+        margin-top: 14px; border-left: 3px solid var(--accent);
+        padding: 4px 0 4px 14px; font-size: 15px;
       }
-      .star-reason .lbl { font-weight: 900; color: var(--star); display: block; margin-bottom: 2px; font-size: 13.5px; }
-      .card-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+      .star-reason .lbl { font-weight: 900; color: var(--accent-ink); display: block; margin-bottom: 2px; font-size: 13.5px; letter-spacing: .06em; }
+      .card-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
       .btn {
         min-height: 44px; padding: 10px 16px; border-radius: var(--radius-sm);
         font-size: 14.5px; font-weight: 700; text-decoration: none;
@@ -215,39 +237,38 @@
         .card-actions .btn { flex: 1 1 0; min-height: 48px; }
       }
       .btn-primary { background: var(--accent); color: #fff; border: 1px solid var(--accent); }
-      @media (prefers-color-scheme: dark) { .btn-primary { color: #0c1a14; } }
-      .btn-ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+      @media (prefers-color-scheme: dark) { .btn-primary { color: #10151d; } }
+      .btn-ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line-strong); }
       .btn .chev { transition: transform .18s ease; font-size: 12px; }
       .btn[aria-expanded="true"] .chev { transform: rotate(180deg); }
       .card-detail { border-top: 1px solid var(--line); padding: 14px 16px 16px; background: var(--surface); }
       .card-detail[hidden] { display: none; }
-      .detail-grid { display: grid; gap: 10px; }
+      .detail-grid { display: grid; gap: 12px; }
       @media (min-width: 640px) { .detail-grid { grid-template-columns: 1fr 1fr; } }
       .detail-item .k { font-size: 12.5px; font-weight: 700; color: var(--ink-3); display: block; margin-bottom: 1px; }
       .detail-item .v { font-size: 14.5px; }
       .detail-item.wide { grid-column: 1 / -1; }
-      .anchor-box {
-        background: var(--accent-soft); border-radius: var(--radius-sm);
-        padding: 10px 14px; font-size: 15px;
-      }
+      .anchor-box { border: 1px solid var(--accent); padding: 10px 14px; font-size: 15px; }
       .anchor-box .k { color: var(--accent-ink); }
-      .anchor-box .v { font-weight: 900; font-size: 17px; }
+      .anchor-box .v { font-family: var(--font-serif); font-weight: 700; font-size: 18px; font-variant-numeric: tabular-nums; }
 
       /* ---------- Filters ---------- */
       .filters { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+      .filters .group-label { font-size: 13px; font-weight: 700; color: var(--ink-3); margin-top: 2px; }
       .chips { display: flex; gap: 8px; flex-wrap: wrap; }
       .chip {
-        min-height: 44px; padding: 8px 16px; border-radius: 999px;
-        border: 1px solid var(--line); background: var(--surface);
+        min-height: 44px; padding: 8px 16px; border-radius: var(--radius-sm);
+        border: 1px solid var(--line-strong); background: var(--surface);
         color: var(--ink); font-size: 14.5px; font-weight: 500;
       }
       .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 700; }
+      .chip .cnt { font-size: 12px; opacity: .75; font-variant-numeric: tabular-nums; }
       .filters .row { display: flex; align-items: center; gap: 10px; }
       .filters label { font-size: 14px; color: var(--ink-2); font-weight: 700; }
 
       /* ---------- States ---------- */
       .state-box {
-        border: 1px dashed var(--line); border-radius: var(--radius);
+        border: 1px dashed var(--line-strong);
         padding: 32px 20px; text-align: center; color: var(--ink-2);
         background: var(--surface); margin-top: 12px;
       }
@@ -255,16 +276,20 @@
       .state-box p { margin: 0; font-size: 14.5px; }
       .skeleton { margin-top: 12px; display: grid; gap: 12px; }
       .skel {
-        height: 148px; border-radius: var(--radius); border: 1px solid var(--line);
+        height: 148px; border: 1px solid var(--line);
         background: linear-gradient(100deg, var(--surface-2) 40%, var(--surface) 50%, var(--surface-2) 60%);
         background-size: 200% 100%; animation: shimmer 1.2s infinite;
       }
       @keyframes shimmer { from { background-position: 120% 0; } to { background-position: -80% 0; } }
-      @media (prefers-reduced-motion: reduce) { .skel { animation: none; } .btn .chev { transition: none; } }
-      .error-box { border-color: var(--high); background: var(--high-soft); color: var(--ink); }
+      @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+      #dayView { animation: fadein .45s ease both; }
+      @media (prefers-reduced-motion: reduce) {
+        .skel { animation: none; } .btn .chev { transition: none; } #dayView { animation: none; }
+      }
+      .error-box { border-color: var(--high); color: var(--ink); }
 
       /* ---------- History overview ---------- */
-      .history { margin-top: 8px; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
+      .history { margin-top: 8px; border: 1px solid var(--line-strong); background: var(--surface); }
       .history-row {
         display: grid; grid-template-columns: 1fr auto; gap: 4px 12px;
         width: 100%; text-align: left; padding: 14px 16px; min-height: 44px;
@@ -279,7 +304,7 @@
       .history-row[aria-current="date"] { background: var(--accent-soft); }
 
       footer {
-        margin-top: 36px; border-top: 1px solid var(--line); padding-top: 16px;
+        margin-top: 36px; border-top: 1px solid var(--line-strong); padding-top: 16px;
         color: var(--ink-2); font-size: 13.5px;
       }
       footer p { margin: 4px 0; }
@@ -414,7 +439,9 @@
       var WEEKDAYS = ["日","一","二","三","四","五","六"];
 
       /* ================= State ================= */
-      var state = { date:null, area:"全部", sort:"premium" };
+      var state = { date:null, area:"全部", sort:"premium", tag:null };
+      var R = { items:[], starMap:{}, rest:[] };
+      var TAG_LABELS = { value:"低於・貼近實登", park:"公園步行 10 分內", commute:"近交流道", space:"大坪數" };
       var latestDate = DAYS[DAYS.length - 1].date;
 
       function parseDate(s){ var p = s.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
@@ -451,6 +478,52 @@
         if (pa === null) return 1;
         if (pb === null) return -1;
         return pa - pb;
+      }
+      function premTxt(p){
+        if (p.premium === null || p.premium === undefined) return "—";
+        var v = Math.abs(p.premium);
+        var t = (v % 1 === 0) ? String(v) : v.toFixed(1);
+        return (p.premium < 0 ? "−" : "+") + t + "%";
+      }
+      function shortParking(s){
+        if (!s) return "—";
+        if (s.indexOf("無車位") >= 0) return "無（須另購）";
+        if (s.indexOf("坡道平面") >= 0) return "坡道平面";
+        if (s.indexOf("機械") >= 0) return "機械";
+        if (s.indexOf("平面") >= 0) return "平面";
+        return s;
+      }
+      function tagTest(p, key){
+        if (key === "value") return p.premium !== null && p.premium !== undefined && p.premium <= 5;
+        if (key === "park") {
+          if (!p.park) return false;
+          var m = p.park.match(/步行約?\s*(\d+)\s*分鐘/);
+          if (m && +m[1] <= 10) return true;
+          if (p.park.indexOf("公園旁") >= 0) return true;
+          var m2 = p.park.match(/(\d+)\s*公尺/);
+          if (m2 && +m2[1] <= 300) return true;
+          return false;
+        }
+        if (key === "commute") return !!p.commute && p.commute.indexOf("交流道") >= 0 && p.commute.indexOf("較遠") < 0;
+        if (key === "space") return (p.mainPing !== null && p.mainPing !== undefined) ? p.mainPing >= 24 : p.totalPing >= 50;
+        return false;
+      }
+      function scrollToCard(id){
+        var el = dayView.querySelector('[data-id="' + id + '"]');
+        if (!el) {
+          state.area = "全部"; state.tag = null;
+          var ac = dayView.querySelectorAll("[data-area]");
+          for (var i=0;i<ac.length;i++) ac[i].setAttribute("aria-pressed", String(ac[i].getAttribute("data-area") === "全部"));
+          var tc = dayView.querySelectorAll("[data-tag]");
+          for (var j=0;j<tc.length;j++) tc[j].setAttribute("aria-pressed", String(tc[j].getAttribute("data-tag") === "all"));
+          renderList();
+          el = dayView.querySelector('[data-id="' + id + '"]');
+        }
+        if (el) {
+          el.scrollIntoView({ behavior:"smooth", block:"start" });
+          el.classList.add("flash");
+          setTimeout(function(){ el.classList.remove("flash"); }, 1800);
+        }
       }
 
       /* ================= Card rendering ================= */
@@ -505,9 +578,10 @@
         var items = day.ids.map(function(id){ return PROPERTIES[id]; }).filter(Boolean);
         var starMap = {};
         day.stars.forEach(function(s){ starMap[s.id] = s.reason; });
+        R.items = items; R.starMap = starMap; R.rest = items.filter(function(p){ return !starMap[p.id]; });
 
         var html = '';
-        html += '<div class="day-head"><h1>' + fmtFull(day.date) + '（' + weekday(day.date) + '）・' + items.length + ' 間</h1>'
+        html += '<div class="day-head"><span class="vert" aria-hidden="true">桃園購屋・每日名單</span><h1>' + fmtFull(day.date) + '（' + weekday(day.date) + '）・' + items.length + ' 間</h1>'
           + '<p class="sub">桃園自住購屋每日名單｜總價 2,000 萬內含車位・5 區・當日公布名單</p>'
           + '<p class="cond-line">篩選條件：夫妻＋1 狗自住、2+1 或 3 房、屋齡 20 年內、可直接入住、近大公園遛狗；排序以開價對實價登錄的溢價由低到高。</p></div>';
 
@@ -534,10 +608,31 @@
           html += '</section>';
         }
 
+        /* Compare table (B: 住のカタログ) */
+        var sorted = items.slice().sort(byPremium);
+        html += '<section aria-label="今日比較表"><h2 class="section-title">今日比較表 <span class="hint">點任一列跳到該物件卡片</span></h2>';
+        html += '<div class="cmp-wrap"><table class="cmp"><thead><tr><th>物件</th><th class="num">總價</th><th class="num">單價</th><th class="num">實登差距</th><th>公園・遛狗</th><th>車位</th></tr></thead><tbody>';
+        sorted.forEach(function(p){
+          html += '<tr data-goto="' + p.id + '" tabindex="0" aria-label="跳到 ' + esc(p.name) + ' 的卡片">'
+            + '<td><span class="cmp-name">' + (starMap[p.id] ? '★ ' : '') + esc(p.name) + '</span><span class="cmp-area">' + esc(p.area) + '</span></td>'
+            + '<td class="num">' + p.price.toLocaleString("zh-Hant") + ' 萬</td>'
+            + '<td class="num">' + (p.price / p.totalPing).toFixed(1) + ' 萬/坪</td>'
+            + '<td class="num">' + premTxt(p) + '</td>'
+            + '<td>' + esc(p.park || '—') + '</td>'
+            + '<td>' + esc(shortParking(p.parking)) + '</td></tr>';
+        });
+        html += '</tbody></table></div><p class="cmp-note">單價＝總價 ÷ 建坪概算（含車位坪數），僅供同日橫向比較；實登差距「—」表示無同社區數字可對照，詳見各物件卡片。</p></section>';
+
         /* Filters + list */
         var rest = items.filter(function(p){ return !starMap[p.id]; });
-        html += '<section aria-label="當日名單"><h2 class="section-title">' + (stars.length ? '其餘物件' : '當日名單') + ' <span class="hint">點「完整內容」看實登對照與出價錨點</span></h2>';
-        html += '<div class="filters"><div class="chips" role="group" aria-label="依區域篩選">';
+        html += '<section aria-label="當日名單"><h2 class="section-title" id="listTitle">' + (stars.length ? '其餘物件' : '當日名單') + ' <span class="hint">點「完整內容」看實登對照與出價錨點</span></h2>';
+        html += '<div class="filters"><span class="group-label">情境快篩</span><div class="chips" role="group" aria-label="依情境快篩">';
+        html += '<button class="chip" type="button" data-tag="all" aria-pressed="' + (!state.tag) + '">全部情境</button>';
+        Object.keys(TAG_LABELS).forEach(function(k){
+          var cnt = items.filter(function(p){ return tagTest(p, k); }).length;
+          html += '<button class="chip" type="button" data-tag="' + k + '" aria-pressed="' + (state.tag === k) + '">' + TAG_LABELS[k] + ' <span class="cnt">' + cnt + '</span></button>';
+        });
+        html += '</div><span class="group-label">區域</span><div class="chips" role="group" aria-label="依區域篩選">';
         AREAS.forEach(function(a){
           html += '<button class="chip" type="button" data-area="' + a + '" aria-pressed="' + (state.area === a) + '">' + a + '</button>';
         });
@@ -550,24 +645,34 @@
         html += '<div id="listWrap" style="margin-top:14px"></div></section>';
 
         dayView.innerHTML = html;
-        renderList(rest);
-        bindDayControls(rest);
+        renderList();
+        bindDayControls();
         afterRender(day);
       }
 
-      function renderList(rest){
+      function renderList(){
         var wrap = document.getElementById("listWrap");
         if (!wrap) return;
-        var list = rest.slice();
+        var tagActive = !!state.tag;
+        var starSec = document.getElementById("starSection");
+        if (starSec) starSec.style.display = tagActive ? "none" : "";
+        var title = document.getElementById("listTitle");
+        if (title) {
+          title.innerHTML = tagActive
+            ? '情境快篩：' + TAG_LABELS[state.tag] + ' <span class="hint">符合的全部物件，含特別推薦</span>'
+            : ((Object.keys(R.starMap).length ? '其餘物件' : '當日名單') + ' <span class="hint">點「完整內容」看實登對照與出價錨點</span>');
+        }
+        var list = (tagActive ? R.items : R.rest).slice();
+        if (tagActive) list = list.filter(function(p){ return tagTest(p, state.tag); });
         if (state.area !== "全部") list = list.filter(function(p){ return p.area === state.area; });
         if (state.sort === "premium") list.sort(byPremium);
         else if (state.sort === "price") list.sort(function(a,b){ return a.price - b.price; });
         else if (state.sort === "ping") list.sort(function(a,b){ return b.totalPing - a.totalPing; });
         if (!list.length) {
-          wrap.innerHTML = '<div class="state-box" role="status"><p class="big">這個區域今天沒有物件</p><p>換一個區域，或切回「全部」看今天的完整名單。</p></div>';
+          wrap.innerHTML = '<div class="state-box" role="status"><p class="big">這個條件今天沒有物件</p><p>換一個情境或區域，或切回「全部情境／全部」看今天的完整名單。</p></div>';
           return;
         }
-        wrap.innerHTML = list.map(function(p){ return cardHTML(p, null); }).join("");
+        wrap.innerHTML = list.map(function(p){ return cardHTML(p, tagActive ? (R.starMap[p.id] || null) : null); }).join("");
         bindToggles(wrap);
       }
 
@@ -586,18 +691,35 @@
         }
       }
 
-      function bindDayControls(rest){
+      function bindDayControls(){
         var chips = dayView.querySelectorAll("[data-area]");
         for (var i=0;i<chips.length;i++) {
           chips[i].addEventListener("click", function(){
             state.area = this.getAttribute("data-area");
             var all = dayView.querySelectorAll("[data-area]");
             for (var j=0;j<all.length;j++) all[j].setAttribute("aria-pressed", String(all[j] === this));
-            renderList(rest);
+            renderList();
+          });
+        }
+        var tchips = dayView.querySelectorAll("[data-tag]");
+        for (var k=0;k<tchips.length;k++) {
+          tchips[k].addEventListener("click", function(){
+            var v = this.getAttribute("data-tag");
+            state.tag = (v === "all") ? null : v;
+            var all = dayView.querySelectorAll("[data-tag]");
+            for (var j=0;j<all.length;j++) all[j].setAttribute("aria-pressed", String(all[j] === this));
+            renderList();
           });
         }
         var sel = document.getElementById("sortSelect");
-        if (sel) sel.addEventListener("change", function(){ state.sort = this.value; renderList(rest); });
+        if (sel) sel.addEventListener("change", function(){ state.sort = this.value; renderList(); });
+        var rows = dayView.querySelectorAll("[data-goto]");
+        for (var r=0;r<rows.length;r++) {
+          rows[r].addEventListener("click", function(){ scrollToCard(this.getAttribute("data-goto")); });
+          rows[r].addEventListener("keydown", function(e){
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); scrollToCard(this.getAttribute("data-goto")); }
+          });
+        }
         var starSec = document.getElementById("starSection");
         if (starSec) bindToggles(starSec);
       }
@@ -684,6 +806,7 @@
         if (dateStr === state.date && pushHash !== true) { renderDateBar(); renderHistory(); return; }
         state.date = dateStr;
         state.area = "全部";
+        state.tag = null;
         if (pushHash !== false) {
           if (location.hash !== "#" + dateStr) { suppressHash = true; location.hash = dateStr; }
         }
