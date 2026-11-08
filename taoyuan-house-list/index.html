@@ -10,26 +10,27 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;700;900&display=swap" rel="stylesheet" />
     <style>
-      /* ---------- Design tokens (A+B: 白の間 × 住のカタログ) ----------
-         生成り白底 + 墨 + 單一強調色（深藍）。格線即裝飾、襯線數字、
-         直書點綴。色彩紀律：底 + 墨 + 強調 ≤3 色（功能警示色除外）。 */
+      /* ---------- Design tokens (B: 一行一間・清單式) ----------
+         強制白底 + 墨 + 單一強調色（深藍）。清單列以 1px 細線分隔，
+         無陰影、無圓角卡片牆；襯線用於標題與價格，數字 tabular。 */
       :root {
         color-scheme: light;
-        --bg: #FAFAF8;
+        --bg: #FFFFFF;
         --surface: #FFFFFF;
-        --surface-2: #F1EFE9;
+        --surface-2: #F4F4F0;
         --ink: #1F1F1F;
-        --ink-2: #4A4A45;
-        --ink-3: #6B6B62;
-        --line: #E4E2D9;
-        --line-strong: #C8C5B8;
+        --ink-2: #44443F;
+        --ink-3: #5F5F57;
+        --line: #E3E1D8;
+        --line-strong: #C6C3B6;
         --accent: #2B4C6F;
         --accent-ink: #1E3A56;
         --accent-soft: #E9EEF4;
+        --pos: #1E6B3A;
+        --warn1: #7A4D00;
         --warn: #8A2F1B;
         --warn-line: #D8A79B;
         --high: #9C2B1B;
-        --radius: 0px;
         --radius-sm: 3px;
         --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
         --font-serif: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
@@ -99,7 +100,7 @@
       }
       .today-btn:disabled { opacity: .4; border-color: var(--line); color: var(--ink-3); }
 
-      /* ---------- Day heading (editorial masthead) ---------- */
+      /* ---------- Day heading ---------- */
       .day-head { position: relative; padding: 26px 38px 6px 0; }
       .day-head h1 {
         font-family: var(--font-serif); font-size: 27px; font-weight: 700;
@@ -144,7 +145,7 @@
       .section-title::after { content: ""; flex: 1 1 auto; border-top: 1px solid var(--line-strong); }
       .section-title .hint { font-family: var(--font); font-size: 13px; font-weight: 400; color: var(--ink-3); }
 
-      /* ---------- Compare table (B: 住のカタログ) ---------- */
+      /* ---------- Compare table (kept above the list, same hairline style) ---------- */
       .cmp-wrap { overflow-x: auto; border: 1px solid var(--line-strong); background: var(--surface); }
       table.cmp { border-collapse: collapse; width: 100%; min-width: 600px; font-size: 14px; }
       .cmp th, .cmp td { padding: 10px 12px; text-align: left; vertical-align: top; }
@@ -161,81 +162,73 @@
       .cmp-area { font-size: 12.5px; color: var(--ink-3); display: block; }
       .cmp-note { font-size: 12.5px; color: var(--ink-3); margin: 8px 0 0; }
 
-      .card-photo {
-        display: block; flex: 0 0 30%; max-width: 330px; align-self: stretch;
-        object-fit: cover; border-right: 1px solid var(--line); background: var(--surface-2);
+      /* ---------- B: one property per row ---------- */
+      .hlist { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line-strong); }
+      .hrow { border-bottom: 1px solid var(--line-strong); background: var(--surface); }
+      .hrow.flash { outline: 3px solid var(--accent); outline-offset: -3px; }
+      .hrow-head {
+        display: flex; align-items: center; gap: 12px;
+        width: 100%; min-height: 84px; padding: 10px 6px;
+        background: none; border: 0; text-align: left; color: var(--ink);
+        -webkit-tap-highlight-color: transparent; touch-action: manipulation;
       }
-      @media (max-width: 640px) {
-        .card { flex-direction: column; }
-        .card-photo {
-          flex: none; width: 100%; max-width: none; aspect-ratio: 2 / 1;
-          border-right: none; border-bottom: 1px solid var(--line);
-        }
+      .hrow-head:hover { background: var(--surface-2); }
+      .hrow-thumb {
+        flex: 0 0 84px; width: 84px; height: 84px;
+        object-fit: cover; background: var(--surface-2);
+      }
+      .hrow-info { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+      .hrow-line1 { display: flex; align-items: baseline; gap: 8px; min-width: 0; line-height: 1.4; }
+      .hrow-name {
+        font-family: var(--font-serif); font-size: 17.5px; font-weight: 700;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+      }
+      .hrow-star { color: var(--accent); }
+      .hrow.star .hrow-name { color: var(--accent-ink); }
+      .hrow-area {
+        flex: 0 0 auto; font-size: 12px; font-weight: 700; color: var(--accent-ink);
+        border: 1px solid var(--accent); padding: 0 6px; line-height: 1.6;
+      }
+      .hrow-cond {
+        flex: 0 0 auto; font-size: 12px; font-weight: 700; color: var(--warn);
+        border: 1px dashed var(--warn); padding: 0 6px; line-height: 1.6;
+      }
+      .hrow-line2 {
+        display: flex; align-items: baseline; gap: 6px 12px; flex-wrap: wrap;
+        line-height: 1.45; font-variant-numeric: tabular-nums;
+      }
+      .hrow-price {
+        font-family: var(--font-serif); font-size: 21px; font-weight: 700;
+        white-space: nowrap; line-height: 1.2;
+      }
+      .hrow-price .wan { font-size: 13px; font-weight: 700; color: var(--ink-2); }
+      .hrow-unit { font-size: 13px; color: var(--ink-2); white-space: nowrap; }
+      .hrow-prem { font-size: 13px; font-weight: 700; white-space: nowrap; }
+      .hrow-prem.pos { color: var(--pos); }
+      .hrow-prem.warn1 { color: var(--warn1); }
+      .hrow-prem.warn { color: var(--high); }
+      .hrow-prem.flat {
+        color: var(--ink-2); font-weight: 500; min-width: 0;
+        overflow: hidden; text-overflow: ellipsis;
+      }
+      .hrow-park { font-size: 13px; color: var(--ink-2); white-space: nowrap; }
+      .hrow-chev {
+        flex: 0 0 auto; font-size: 13px; color: var(--ink-3);
+        transition: transform .18s ease; padding: 0 2px;
+      }
+      .hrow-head[aria-expanded="true"] .hrow-chev { transform: rotate(180deg); }
+      @media (max-width: 430px) {
+        .hrow-head { gap: 10px; min-height: 78px; padding: 8px 2px; }
+        .hrow-thumb { flex-basis: 72px; width: 72px; height: 72px; }
+        .hrow-name { font-size: 16.5px; }
+        .hrow-price { font-size: 19.5px; }
+        .hrow-unit, .hrow-prem, .hrow-park { font-size: 12.5px; }
+        .hrow-line2 { gap: 4px 9px; }
       }
 
-      /* ---------- Cards (A: 格線即裝飾, no shadow) ---------- */
-      .card {
-        background: var(--surface); border: 1px solid var(--line-strong);
-        margin-bottom: 12px; display: flex; align-items: stretch;
-      }
-      .card.star-card { border-color: var(--accent); box-shadow: inset 0 3px 0 var(--accent); }
-      .card.flash { outline: 3px solid var(--accent); outline-offset: 2px; }
-      .card-main { padding: 18px 16px 16px; flex: 1 1 auto; min-width: 0; }
-      .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-      .card-name { font-family: var(--font-serif); font-size: 19px; font-weight: 700; margin: 0; line-height: 1.4; }
-      .card-name .area-tag {
-        display: inline-block; vertical-align: 2px; margin-left: 8px;
-        font-family: var(--font); font-size: 12px; font-weight: 700; color: var(--accent-ink);
-        border: 1px solid var(--accent); padding: 1px 8px;
-      }
-      .price { text-align: right; flex: 0 0 auto; }
-      .price .amount {
-        font-family: var(--font-serif); font-size: 27px; font-weight: 700;
-        line-height: 1.15; font-variant-numeric: tabular-nums;
-      }
-      .price .unit { font-size: 12.5px; color: var(--ink-3); }
-      .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-      .badge {
-        font-size: 12.5px; font-weight: 500; padding: 3px 10px;
-        border: 1px solid var(--line-strong); color: var(--ink-2);
-        display: inline-flex; align-items: center; gap: 5px;
-      }
-      .badge .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: 0 0 auto; }
-      .badge.good { color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
-      .badge.mid  { color: var(--ink-2); }
-      .badge.high { color: var(--high); border-color: var(--warn-line); font-weight: 700; }
-      .badge.flat { color: var(--ink-2); }
-      .badge.cond { color: var(--warn); border: 1px dashed var(--warn); font-weight: 700; }
-      .badge.star-badge { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
-      .specs {
-        display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 16px;
-        margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line);
-        font-size: 14.5px;
-      }
-      @media (min-width: 560px) { .specs { grid-template-columns: repeat(4, 1fr); } }
-      .specs .k { color: var(--ink-3); font-size: 12.5px; display: block; }
-      .specs .v { font-weight: 700; font-variant-numeric: tabular-nums; }
-      .star-reason {
-        margin-top: 14px; border-left: 3px solid var(--accent);
-        padding: 4px 0 4px 14px; font-size: 15px;
-      }
-      .star-reason .lbl { font-weight: 900; color: var(--accent-ink); display: block; margin-bottom: 2px; font-size: 13.5px; letter-spacing: .06em; }
-      .card-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
-      .btn {
-        min-height: 44px; padding: 10px 16px; border-radius: var(--radius-sm);
-        font-size: 14.5px; font-weight: 700; text-decoration: none;
-        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-        touch-action: manipulation; -webkit-tap-highlight-color: transparent;
-      }
-      @media (max-width: 560px) {
-        .card-actions .btn { flex: 1 1 0; min-height: 48px; }
-      }
-      .btn-primary { background: var(--accent); color: #fff; border: 1px solid var(--accent); }
-      .btn-ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line-strong); }
-      .btn .chev { transition: transform .18s ease; font-size: 12px; }
-      .btn[aria-expanded="true"] .chev { transform: rotate(180deg); }
-      .card-detail { border-top: 1px solid var(--line); padding: 14px 16px 16px; background: var(--surface); }
-      .card-detail[hidden] { display: none; }
+      /* ---------- Row detail (expanded) ---------- */
+      .hrow-detail { border-top: 1px dashed var(--line-strong); padding: 14px 6px 16px; }
+      .hrow-detail[hidden] { display: none; }
       .detail-grid { display: grid; gap: 12px; }
       @media (min-width: 640px) { .detail-grid { grid-template-columns: 1fr 1fr; } }
       .detail-item .k { font-size: 12.5px; font-weight: 700; color: var(--ink-3); display: block; margin-bottom: 1px; }
@@ -244,6 +237,18 @@
       .anchor-box { border: 1px solid var(--accent); padding: 10px 14px; font-size: 15px; }
       .anchor-box .k { color: var(--accent-ink); }
       .anchor-box .v { font-family: var(--font-serif); font-weight: 700; font-size: 18px; font-variant-numeric: tabular-nums; }
+      .star-reason { border-left: 3px solid var(--accent); padding: 2px 0 2px 14px; font-size: 15px; }
+      .star-reason .lbl { font-weight: 900; color: var(--accent-ink); display: block; margin-bottom: 2px; font-size: 13.5px; letter-spacing: .06em; }
+      .cond-note { font-size: 14.5px; color: var(--warn); font-weight: 700; }
+      .detail-actions { margin-top: 14px; }
+      .btn {
+        min-height: 44px; padding: 10px 16px; border-radius: var(--radius-sm);
+        font-size: 14.5px; font-weight: 700; text-decoration: none;
+        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+      }
+      .btn-primary { background: var(--accent); color: #fff; border: 1px solid var(--accent); }
+      @media (max-width: 560px) { .detail-actions .btn { width: 100%; min-height: 48px; } }
 
       /* ---------- Filters ---------- */
       .filters { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
@@ -267,9 +272,9 @@
       }
       .state-box .big { font-size: 17px; font-weight: 700; color: var(--ink); margin: 0 0 4px; }
       .state-box p { margin: 0; font-size: 14.5px; }
-      .skeleton { margin-top: 12px; display: grid; gap: 12px; }
+      .skeleton { margin-top: 12px; display: grid; gap: 0; border-top: 1px solid var(--line-strong); }
       .skel {
-        height: 148px; border: 1px solid var(--line);
+        height: 86px; border-bottom: 1px solid var(--line);
         background: linear-gradient(100deg, var(--surface-2) 40%, var(--surface) 50%, var(--surface-2) 60%);
         background-size: 200% 100%; animation: shimmer 1.2s infinite;
       }
@@ -277,7 +282,7 @@
       @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
       #dayView { animation: fadein .45s ease both; }
       @media (prefers-reduced-motion: reduce) {
-        .skel { animation: none; } .btn .chev { transition: none; } #dayView { animation: none; }
+        .skel { animation: none; } .hrow-chev { transition: none; } #dayView { animation: none; }
       }
       .error-box { border-color: var(--high); color: var(--ink); }
 
@@ -652,46 +657,68 @@
         }
       }
 
-      /* ================= Card rendering ================= */
+      /* ================= Row rendering (B: one property per row) ================= */
+      function parkWalkTxt(p){
+        if (!p.park) return "";
+        var m = p.park.match(/步行約?\s*(\d+(?:–\d+)?)\s*分鐘/);
+        if (m) return "公園步行約 " + m[1] + " 分鐘";
+        var m2 = p.park.match(/(\d+)\s*公尺/);
+        if (m2) return "公園約 " + m2[1] + " 公尺";
+        if (p.park.indexOf("公園旁") >= 0 || p.park.indexOf("在旁") >= 0) return "公園在旁";
+        return "";
+      }
+      function premRow(p){
+        if (p.premium === null || p.premium === undefined) {
+          return { t: p.premiumLabel || "", cls: "flat" };
+        }
+        var v = Math.abs(p.premium);
+        var t = (v % 1 === 0) ? String(v) : v.toFixed(1);
+        if (p.premium < 0) return { t: "低於實登 " + t + "%", cls: "pos" };
+        return { t: "高於實登 " + t + "%", cls: p.premium <= 5 ? "warn1" : "warn" };
+      }
       function cardHTML(p, starReason){
         var isStar = !!starReason;
+        var prem = premRow(p);
+        var parkTxt = parkWalkTxt(p);
         var mainPingTxt = (p.mainPing === null) ? "未提供" : p.mainPing + " 坪";
         var html = '';
-        html += '<article class="card' + (isStar ? ' star-card' : '') + '" data-id="' + p.id + '">';
-        if (p.img) html += '<img class="card-photo" src="' + esc(p.img) + '" alt="' + esc(p.name) + ' 封面照片（來源：刊登頁）" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">';
-        html += '<div class="card-main">';
-        html += '<div class="card-top"><h3 class="card-name">' + esc(p.name) + '<span class="area-tag">' + esc(p.area) + '</span></h3>';
-        html += '<div class="price"><div class="amount">' + p.price.toLocaleString("zh-Hant") + '</div><div class="unit">萬元・開價</div></div></div>';
-        html += '<div class="badges">' + premiumBadge(p) + growthBadge(p);
-        if (isStar) html += '<span class="badge star-badge">★ 特別推薦</span>';
-        if (p.conditional) html += '<span class="badge cond">條件式</span>';
-        if (p.note) html += '<span class="badge flat">' + esc(p.note) + '</span>';
-        html += '</div>';
-        if (p.conditional) html += '<p style="margin:10px 0 0;font-size:14px;color:var(--warn);font-weight:700">條件式：' + esc(p.conditionalWhy) + '</p>';
-        html += '<div class="specs">'
-          + '<div><span class="k">主＋陽</span><span class="v">' + mainPingTxt + '</span></div>'
-          + '<div><span class="k">建坪</span><span class="v">' + p.totalPing + ' 坪</span></div>'
-          + '<div><span class="k">屋齡</span><span class="v">' + p.age + ' 年</span></div>'
-          + '<div><span class="k">格局</span><span class="v">' + esc(p.layout) + '</span></div>'
-          + '</div>';
-        html += '<p style="margin:10px 0 0;font-size:14px;color:var(--ink-2)"><strong style="color:var(--ink)">車位：</strong>' + esc(p.parking) + '</p>';
-        if (isStar) html += '<div class="star-reason"><span class="lbl">★ 特別推薦理由</span>' + esc(starReason) + '</div>';
-        html += '<div class="card-actions">'
-          + '<a class="btn btn-primary" href="' + esc(p.url) + '" target="_blank" rel="noopener">開啟物件頁 ↗</a>'
-          + '<button class="btn btn-ghost" type="button" aria-expanded="false" data-toggle="' + p.id + '">完整內容 <span class="chev" aria-hidden="true">▾</span></button>'
-          + '</div>';
-        html += '</div>';
-        html += '<div class="card-detail" id="detail-' + p.id + '" hidden>';
+        html += '<li class="hrow' + (isStar ? ' star' : '') + '" data-id="' + p.id + '">';
+        html += '<button class="hrow-head" type="button" aria-expanded="false" aria-controls="detail-' + p.id + '" data-toggle="' + p.id + '">';
+        if (p.img) html += '<img class="hrow-thumb" src="' + esc(p.img) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">';
+        html += '<span class="hrow-info">';
+        html += '<span class="hrow-line1"><span class="hrow-name">' + (isStar ? '<span class="hrow-star" aria-hidden="true">★</span> ' : '') + esc(p.name) + '</span>'
+          + '<span class="hrow-area">' + esc(p.area) + '</span>'
+          + (p.conditional ? '<span class="hrow-cond">條件式</span>' : '')
+          + '</span>';
+        html += '<span class="hrow-line2">'
+          + '<span class="hrow-price">' + p.price.toLocaleString("zh-Hant") + ' <span class="wan">萬</span></span>'
+          + '<span class="hrow-unit">' + (p.price / p.totalPing).toFixed(1) + ' 萬/坪</span>'
+          + (prem.t ? '<span class="hrow-prem ' + prem.cls + '">' + esc(prem.t) + '</span>' : '')
+          + (parkTxt ? '<span class="hrow-park">' + esc(parkTxt) + '</span>' : '')
+          + '</span>';
+        html += '</span>';
+        html += '<span class="hrow-chev" aria-hidden="true">▾</span>';
+        html += '</button>';
+        html += '<div class="hrow-detail" id="detail-' + p.id + '" hidden>';
         html += '<div class="detail-grid">'
           + '<div class="detail-item wide anchor-box"><span class="k">建議出價錨點</span><span class="v">' + esc(p.anchor) + '</span></div>'
+          + '<div class="detail-item"><span class="k">主＋陽</span><span class="v">' + mainPingTxt + '</span></div>'
+          + '<div class="detail-item"><span class="k">建坪</span><span class="v">' + p.totalPing + ' 坪</span></div>'
+          + '<div class="detail-item"><span class="k">屋齡</span><span class="v">' + p.age + ' 年</span></div>'
+          + '<div class="detail-item"><span class="k">格局</span><span class="v">' + esc(p.layout) + '</span></div>'
+          + '<div class="detail-item wide"><span class="k">車位</span><span class="v">' + esc(p.parking) + '</span></div>'
           + '<div class="detail-item wide"><span class="k">實登對照</span><span class="v">' + esc(p.actual) + '</span></div>'
+          + (isStar ? '<div class="detail-item wide"><div class="star-reason"><span class="lbl">★ 特別推薦理由</span>' + esc(starReason) + '</div></div>' : '')
           + '<div class="detail-item"><span class="k">推薦理由</span><span class="v">' + esc(p.pros) + '</span></div>'
           + '<div class="detail-item"><span class="k">主要缺點</span><span class="v">' + esc(p.cons) + '</span></div>'
           + '<div class="detail-item wide"><span class="k">增值空間：' + esc(p.growth) + '</span><span class="v">' + esc(p.growthWhy) + '</span></div>'
           + '<div class="detail-item"><span class="k">公園・遛狗</span><span class="v">' + esc(p.park || "—") + '</span></div>'
           + '<div class="detail-item"><span class="k">通勤</span><span class="v">' + esc(p.commute || "—") + '</span></div>'
+          + (p.conditional ? '<div class="detail-item wide"><span class="k">條件式說明</span><span class="v cond-note">' + esc(p.conditionalWhy) + '</span></div>' : '')
+          + (p.note ? '<div class="detail-item wide"><span class="k">備註</span><span class="v">' + esc(p.note) + '</span></div>' : '')
           + '</div>';
-        html += '</div></article>';
+        html += '<div class="detail-actions"><a class="btn btn-primary" href="' + esc(p.url) + '" target="_blank" rel="noopener">開啟物件頁 ↗</a></div>';
+        html += '</div></li>';
         return html;
       }
 
@@ -731,8 +758,9 @@
         var stars = items.filter(function(p){ return starMap[p.id]; });
         if (stars.length) {
           html += '<section aria-label="特別推薦" id="starSection"><h2 class="section-title">★ 特別推薦 <span class="hint">今天最值得優先約看</span></h2>';
+          html += '<ul class="hlist">';
           stars.forEach(function(p){ html += cardHTML(p, starMap[p.id]); });
-          html += '</section>';
+          html += '</ul></section>';
         }
 
         /* Compare table (B: 住のカタログ) */
@@ -752,7 +780,7 @@
 
         /* Filters + list */
         var rest = items.filter(function(p){ return !starMap[p.id]; });
-        html += '<section aria-label="當日名單"><h2 class="section-title" id="listTitle">' + (stars.length ? '其餘物件' : '當日名單') + ' <span class="hint">點「完整內容」看實登對照與出價錨點</span></h2>';
+        html += '<section aria-label="當日名單"><h2 class="section-title" id="listTitle">' + (stars.length ? '其餘物件' : '當日名單') + ' <span class="hint">點任一列展開完整內容</span></h2>';
         html += '<div class="filters"><span class="group-label">情境快篩</span><div class="chips" role="group" aria-label="依情境快篩">';
         html += '<button class="chip" type="button" data-tag="all" aria-pressed="' + (!state.tag) + '">全部情境</button>';
         Object.keys(TAG_LABELS).forEach(function(k){
@@ -787,7 +815,7 @@
         if (title) {
           title.innerHTML = tagActive
             ? '情境快篩：' + TAG_LABELS[state.tag] + ' <span class="hint">符合的全部物件，含特別推薦</span>'
-            : ((Object.keys(R.starMap).length ? '其餘物件' : '當日名單') + ' <span class="hint">點「完整內容」看實登對照與出價錨點</span>');
+            : ((Object.keys(R.starMap).length ? '其餘物件' : '當日名單') + ' <span class="hint">點任一列展開完整內容</span>');
         }
         var list = (tagActive ? R.items : R.rest).slice();
         if (tagActive) list = list.filter(function(p){ return tagTest(p, state.tag); });
@@ -799,7 +827,7 @@
           wrap.innerHTML = '<div class="state-box" role="status"><p class="big">這個條件今天沒有物件</p><p>換一個情境或區域，或切回「全部情境／全部」看今天的完整名單。</p></div>';
           return;
         }
-        wrap.innerHTML = list.map(function(p){ return cardHTML(p, tagActive ? (R.starMap[p.id] || null) : null); }).join("");
+        wrap.innerHTML = '<ul class="hlist">' + list.map(function(p){ return cardHTML(p, tagActive ? (R.starMap[p.id] || null) : null); }).join("") + '</ul>';
         bindToggles(wrap);
       }
 
@@ -813,7 +841,6 @@
             var open = this.getAttribute("aria-expanded") === "true";
             this.setAttribute("aria-expanded", String(!open));
             panel.hidden = open;
-            this.firstChild.textContent = open ? "完整內容 " : "收起 ";
           });
         }
       }
